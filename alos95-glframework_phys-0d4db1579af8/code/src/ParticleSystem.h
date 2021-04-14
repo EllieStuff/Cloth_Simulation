@@ -18,7 +18,10 @@ struct Particle {
 	glm::vec3 acc;
 	float age = 0;
 	bool enabled = true;
-	Particle() {};
+	Particle() {
+		prevPos = glm::vec3(-1, -1, -1);
+	};
+	//Particle(const Particle& p) : prevPos(p.prevPos), pos(p.pos), speed(p.speed), acc(p.acc) {};
 
 };
 
