@@ -228,7 +228,7 @@ void PhysicsUpdate(float dt) {
 	ps.updateLilSpheres();
 	//ps.updateAge(dt);
 	//ps.UpdateSpeed(dt);
-	//ps.UpdateVerlet(dt);
+	ps.UpdateVerlet(dt);
 
 
 	/*Sphere::updateSphere(glm::vec3(-2, 5, 0), 2.f);

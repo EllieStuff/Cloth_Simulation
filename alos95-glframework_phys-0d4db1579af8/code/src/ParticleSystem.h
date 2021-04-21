@@ -84,6 +84,7 @@ private:
 
 public:
 	Particle* particles;
+	glm::vec3* springs = new str[];
 	int currParticles = 0;
 	float emissionRate = 1.f;
 	float particlesForEachEmission = 6;
