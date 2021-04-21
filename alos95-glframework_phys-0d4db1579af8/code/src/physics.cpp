@@ -19,7 +19,7 @@ extern bool renderSphere;
 extern bool renderCapsule;
 extern bool renderCloth;
 float maxAge = 30.f;
-const int INIT_PARTICLES = 1000;
+const int INIT_PARTICLES = 252;
 float currTime = 1.f / ps.emissionRate;
 bool emissionType = true;
 
@@ -161,9 +161,11 @@ void PhysicsInit() {
 
 	renderParticles = true;
 	ps = ParticleSystem(INIT_PARTICLES);
-	renderSphere = renderCapsule = true;
+	
+	//renderCloth = true;
+	/*renderSphere = renderCapsule = true;
 	Sphere::setupSphere(glm::vec3(-2, 5, 0), 2.f);
-	Capsule::setupCapsule(glm::vec3(3, 3, 0), glm::vec3(2, 8, 0), 1.5f);
+	Capsule::setupCapsule(glm::vec3(3, 3, 0), glm::vec3(2, 8, 0), 1.5f);*/
 }
 
 void spawn( glm::vec3 initPos = glm::vec3(0, 0, 0), glm::vec3 initVelocity = glm::vec3(0, 0, 0)) {
@@ -199,23 +201,40 @@ void UpdateCascade(float dt) {
 	}
 }
 
+void UpdateCloth(float dt)
+{
+	if (nextParticleIdx < ps.GetMaxParticles()) {
+		for (int j = 0; j < 18; j++)
+		{
+			for (int i = 0; i < 14; i++)
+			{
+				spawn(glm::vec3(-3.f + (i * 0.3f), 7.f - (j * 0.3f), 0.f), glm::vec3(0, 0, 0));
+			}
+		}
+	}
+}
+
 void PhysicsUpdate(float dt) {
 	currTime += dt;
 	ps.destroyOldParticles(maxAge);
 
-	if (emissionType)
+	/*if (emissionType)
 		UpdateFountain(dt);
 	else if (!emissionType)
-		UpdateCascade(dt);
+		UpdateCascade(dt);*/
+	UpdateCloth(dt);
+
 
 	ps.updateLilSpheres();
-	ps.updateAge(dt);
-	ps.UpdateSpeed(dt);
+	//ps.updateAge(dt);
+	//ps.UpdateSpeed(dt);
+	//ps.UpdateVerlet(dt);
 
-	Sphere::updateSphere(glm::vec3(-2, 5, 0), 2.f);
+
+	/*Sphere::updateSphere(glm::vec3(-2, 5, 0), 2.f);
 	Sphere::drawSphere();
 	Capsule::updateCapsule(glm::vec3(3, 3, 0), glm::vec3(3, 7, 0), 1.5f);
-	Capsule::drawCapsule();
+	Capsule::drawCapsule();*/
 }
 
 

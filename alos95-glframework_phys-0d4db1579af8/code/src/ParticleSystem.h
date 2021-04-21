@@ -44,15 +44,24 @@ namespace Capsule {
 	extern void drawCapsule();
 }
 
+namespace ClothMesh {
+	extern glm::vec3 posA, posB;
+
+	extern void setupClothMesh();
+	extern void cleanupClothMesh();
+	extern void updateClothMesh(float* array_data);
+	extern void drawClothMesh();
+}
+
 
 class ParticleSystem {
 private:
 	//std::vector<Particle> particles;
 	//int margin = 10;
 
-	int maxParticles = 1000;
+	int maxParticles = 252;
 	glm::vec3* auxPosArr;
-	float bounceCoef = 0.8f;
+	float bounceCoef = 1.f;
 	float fricCoef = 0.6f;
 	float mass = 1.f;
 	glm::vec3 gravity = glm::vec3(0, -9.81f * mass, 0);
@@ -95,6 +104,8 @@ public:
 	void destroyOldParticles(float maxAge);
 
 	void UpdateSpeed(float dt);
+
+	void UpdateVerlet(float dt);
 
 	glm::vec3 CalculatePlaneNormal(glm::vec3 vertex1, glm::vec3 vertex2, glm::vec3 vertex3);
 

@@ -47,7 +47,7 @@ void ParticleSystem::spawnParticle(glm::vec3 _pos, glm::vec3 initVelocity = glm:
 		UpdateParticle(currParticles, _pos, initVelocity);
 		particles[currParticles].age = 0;
 		//particles[currParticles].enabled = true;
-
+		particles[currParticles].prevPos = _pos;
 		currParticles++;
 	}
 }
@@ -108,6 +108,35 @@ void ParticleSystem::UpdateSpeed(float dt)
 		particles[i].pos += particles[i].speed * dt;
 
 		CheckCollisions(i);
+	}
+}
+
+void ParticleSystem::UpdateVerlet(float dt)
+{
+	for (int i = 0; i < currParticles; i++) {
+		//if (i == 0)
+		//{
+		//	printf("X: %f \n", particles[i].pos.x);
+		//	printf("Y: %f \n", particles[i].pos.y);
+		//}
+		if (i != 0 && i != 13)
+		{
+			//Update velocity
+			particles[i].speed = (particles[i].pos - particles[i].prevPos) / 10.f;
+
+			//Update previous positions
+			particles[i].prevPos = particles[i].pos;
+
+			//Update positions
+			particles[i].pos += particles[i].speed;
+			particles[i].pos.y -= 0.5; // gravity
+		}
+		//if (i == 0)
+		//{
+		//	printf("Post X: %f \n", particles[i].pos.x);
+		//	printf("Post Y: %f \n", particles[i].pos.y);
+		//}
+		//CheckCollisions(i);
 	}
 }
 
