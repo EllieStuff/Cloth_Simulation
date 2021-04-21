@@ -101,11 +101,25 @@ void ParticleSystem::destroyOldParticles(float maxAge)
 void ParticleSystem::UpdateSpeed(float dt)
 {
 	for (int i = 0; i < currParticles; i++) {
-		particles[i].prevPos = particles[i].pos;
+		//particles[i].prevPos = particles[i].pos;
 
-		particles[i].acc = gravity;
+		// Euler
+		/*particles[i].acc = gravity / mass;
 		particles[i].speed += particles[i].acc * dt;
-		particles[i].pos += particles[i].speed * dt;
+		particles[i].pos += particles[i].speed * dt;*/
+
+		if (i == 0) {
+			i = i;
+		}
+
+		// Verlet
+		Particle currParticle = particles[i];
+		particles[i].acc = gravity / mass;
+		particles[i].prevPos = currParticle.pos;
+		particles[i].pos = currParticle.pos + (currParticle.pos - currParticle.prevPos) + particles[i].acc * pow(dt, 2.0f);
+		particles[i].speed += (particles[i].pos - particles[i].prevPos) / dt;
+
+
 
 		CheckCollisions(i);
 	}
