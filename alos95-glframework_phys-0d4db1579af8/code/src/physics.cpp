@@ -31,61 +31,61 @@ namespace ClothMesh {
 }
 
 class Mesh : public ParticleSystem {
-private:
-	struct Spring {
-		Mesh* m;
-		int p1_idx, p2_idx;
-		float K_ELASTICITY = 0.8f, K_DAMPING = 0.4f;
-		float REST_DIST = 0.5f;
-
-		Spring(Mesh _m, int _p1_idx, int _p2_idx, float _K_ELASTICITY, float _K_DAMPING, float _REST_DIST)
-			: m(&_m), // <---- es correcte?!?!?!?! <:'O
-			p1_idx(_p1_idx), p2_idx(_p2_idx), K_ELASTICITY(_K_ELASTICITY), K_DAMPING(_K_DAMPING), REST_DIST(_REST_DIST) {
-		};
-
-
-
-	};
-
-	int getIndex(int row, int col) {
-		return row * width + col;
-	};
-
-public:
-	//int width, height;
-	std::vector<std::vector<Particle>> nodes;
-
-	Mesh() : Mesh(ClothMesh::numCols, ClothMesh::numRows) {};
-	Mesh(int _width, int _height) {
-		ParticleSystem(_width * _height);
-		nodes = std::vector<std::vector<Particle>>(_height);
-
-		// initialize mesh positions
-		for (int row = 0; row < nodes.size(); row++) {
-			nodes[row] = std::vector<Particle>(_width);
-
-			for (int col = 0; col < nodes[row].size(); col++) {
-				particles[getIndex(row, col)].pos = glm::vec3(row * 0.3f, col * 0.2f, 0.0f);
-			}
-		}
-	}
-
-	glm::vec3 *getSpringForces(
-		float k_elasticity, 
-		float k_damping, 
-		float rest_distance, // L
-		glm::vec3 p1, glm::vec3 p2,
-		glm::vec3 v1, glm::vec3 v2
-	) {
-		// Force applied to p1 due to a spring from p1 to p2
-		glm::vec3 *springForces;
-
-		// TODO
-		// ...
-
-		return springForces;
-	}
-
+//private:
+//	struct Spring {
+//		Mesh* m;
+//		int p1_idx, p2_idx;
+//		float K_ELASTICITY = 0.8f, K_DAMPING = 0.4f;
+//		float REST_DIST = 0.5f;
+//
+//		Spring(Mesh _m, int _p1_idx, int _p2_idx, float _K_ELASTICITY, float _K_DAMPING, float _REST_DIST)
+//			: m(&_m), // <---- es correcte?!?!?!?! <:'O
+//			p1_idx(_p1_idx), p2_idx(_p2_idx), K_ELASTICITY(_K_ELASTICITY), K_DAMPING(_K_DAMPING), REST_DIST(_REST_DIST) {
+//		};
+//
+//
+//
+//	};
+//
+//	int getIndex(int row, int col) {
+//		return row * width + col;
+//	};
+//
+//public:
+//	//int width, height;
+//	std::vector<std::vector<Particle>> nodes;
+//
+//	Mesh() : Mesh(ClothMesh::numCols, ClothMesh::numRows) {};
+//	Mesh(int _width, int _height) {
+//		ParticleSystem(_width * _height);
+//		nodes = std::vector<std::vector<Particle>>(_height);
+//
+//		// initialize mesh positions
+//		for (int row = 0; row < nodes.size(); row++) {
+//			nodes[row] = std::vector<Particle>(_width);
+//
+//			for (int col = 0; col < nodes[row].size(); col++) {
+//				particles[getIndex(row, col)].pos = glm::vec3(row * 0.3f, col * 0.2f, 0.0f);
+//			}
+//		}
+//	}
+//
+//	glm::vec3 *getSpringForces(
+//		float k_elasticity, 
+//		float k_damping, 
+//		float rest_distance, // L
+//		glm::vec3 p1, glm::vec3 p2,
+//		glm::vec3 v1, glm::vec3 v2
+//	) {
+//		// Force applied to p1 due to a spring from p1 to p2
+//		glm::vec3 *springForces;
+//
+//		// TODO
+//		// ...
+//
+//		return springForces;
+//	}
+//
 };
 
 class Solver {
@@ -126,37 +126,37 @@ public:
 Solver solver;
 Mesh mesh;
 
-void PhysicsInit() {
-	// TODO: Mirar d'on ha tret aixo del solver
-	solver = Verlet();
-	//solver = Euler();
+//void PhysicsInit() {
+//	// TODO: Mirar d'on ha tret aixo del solver
+//	solver = Verlet();
+//	//solver = Euler();
+//
+//	//mesh = Mesh(ClothMesh::numCols, ClothMesh::numRows);
+//	renderCloth = true;
+//
+//	// Per a provar en una mesh mes petita
+//	//mesh = Mesh(1, 2);
+//
+//	// Per a rendiritzar particules per a debugar
+//	//renderParticles = true;
+//	//LilSpheres::particleCount = mesh.width * mesh.height;
+//}
 
-	mesh = Mesh(ClothMesh::numCols, ClothMesh::numRows);
-	renderCloth = true;
-
-	// Per a provar en una mesh mes petita
-	//mesh = Mesh(1, 2);
-
-	// Per a rendiritzar particules per a debugar
-	//renderParticles = true;
-	//LilSpheres::particleCount = mesh.width * mesh.height;
-}
-
-void PhysicsUpdate(float dt) {
-	// TODO: Posar les dades dins la funció i descomentar
-	//glm::vec3* forces = mesh.getSpringForces(/*Passar-hi dades de la funció*/);
-
-	// sumar gravetat
-
-	//solver.updateParticles(mesh, forces);
-
-	//ClothMesh::updateClothMesh(&(mesh.positions[0].x));
-	LilSpheres::updateParticles(0, mesh.width * mesh.height, &(mesh.particles[0].pos.x));
-}
-
-void PhysicsCleanup() {
-
-}
+//void PhysicsUpdate(float dt) {
+//	// TODO: Posar les dades dins la funció i descomentar
+//	//glm::vec3* forces = mesh.getSpringForces(/*Passar-hi dades de la funció*/);
+//
+//	// sumar gravetat
+//
+//	//solver.updateParticles(mesh, forces);
+//
+//	//ClothMesh::updateClothMesh(&(mesh.positions[0].x));
+//	//LilSpheres::updateParticles(0, mesh.width * mesh.height, &(mesh.particles[0].pos.x));
+//}
+//
+//void PhysicsCleanup() {
+//
+//}
 
 
 bool show_test_window = false;
@@ -179,7 +179,7 @@ void PhysicsInit() {
 	//Exemple_PhysicsInit();
 
 	renderParticles = true;
-	ps = ParticleSystem(INIT_PARTICLES);
+	ps = ParticleSystem(/*INIT_PARTICLES*/ 221, 221);
 	
 	//renderCloth = true;
 	/*renderSphere = renderCapsule = true;
@@ -230,6 +230,8 @@ void UpdateCloth(float dt)
 				spawn(glm::vec3(-3.f + (i * 0.3f), 7.f - (j * 0.3f), 0.f), glm::vec3(0, 0, 0));
 			}
 		}
+
+		ps.InitSprings();
 	}
 }
 

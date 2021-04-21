@@ -85,15 +85,33 @@ private:
 
 	void CheckCollisions(int i);
 
+	struct Spring {
+		//Mesh* m;
+		int p1_idx, p2_idx;
+		float K_ELASTICITY = 0.8f, K_DAMPING = 0.4f;
+		float REST_DIST = 0.5f;
+		
+		Spring() {};
+		Spring(/*Mesh _m, */int _p1_idx, int _p2_idx, float _K_ELASTICITY, float _K_DAMPING, float _REST_DIST)
+			: //m(&_m), // <---- es correcte?!?!?!?! <:'O
+			p1_idx(_p1_idx), p2_idx(_p2_idx), K_ELASTICITY(_K_ELASTICITY), K_DAMPING(_K_DAMPING), REST_DIST(_REST_DIST) {
+
+		};
+		
+		
+		
+	};
+
 public:
 	Particle* particles;
-	glm::vec3* springs = new str[];
+	Spring* springs;
 	int currParticles = 0;
 	float emissionRate = 1.f;
 	float particlesForEachEmission = 6;
+	int rowParticles, colParticles;
 
 	ParticleSystem() {};
-	ParticleSystem(int _numParticles, glm::vec3 _pos = glm::vec3(0, 0, 0));
+	ParticleSystem(int row, int col);
 
 	void UpdateParticle(int idx, glm::vec3 newPos, glm::vec3 newVel);
 
@@ -110,6 +128,8 @@ public:
 	void UpdateSpeed(float dt);
 
 	void UpdateVerlet(float dt);
+
+	void InitSprings();
 
 	glm::vec3 CalculatePlaneNormal(glm::vec3 vertex1, glm::vec3 vertex2, glm::vec3 vertex3);
 

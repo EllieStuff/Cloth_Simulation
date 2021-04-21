@@ -1,15 +1,38 @@
 #include "ParticleSystem.h"
 
-ParticleSystem::ParticleSystem(int _numParticles, glm::vec3 _pos)
+ParticleSystem::ParticleSystem(int rowParticles, int colParticles)
 {
 	//maxParticles = _numParticles;
-	currParticles = _numParticles;
-	if (currParticles > maxParticles) currParticles = maxParticles;
-	particles = new Particle[maxParticles];
-	auxPosArr = new glm::vec3[maxParticles];
+	this->rowParticles = rowParticles;
+	this->colParticles = colParticles;
+	maxParticles = currParticles = rowParticles * colParticles;
+	//if (currParticles > maxParticles) currParticles = maxParticles;
+	particles = new Particle[currParticles];
+	auxPosArr = new glm::vec3[currParticles];
+	springs = new Spring[currParticles];
+
 	//particles[maxParticles].age = 0;
 	/*positions = new glm::vec3[maxParticles];
 	age = new float[maxParticles];*/
+}
+
+void ParticleSystem::InitSprings() {
+	for (int i = 0; i < rowParticles - 1; i++) {
+		if (i % 13 == 0 && i > 1) {
+			// Do nothing
+		}
+		else {
+			springs[i] = Spring(i, i + 1, 50, 0.5f, 0.3f);
+		}
+	}
+	for (int i = 0; i < colParticles - 1; i++) {
+		if (i % 17 == 0 && i > 1) {
+			// Do nothing
+		}
+		else {
+			springs[i] = Spring(i, i + 1, 50, 0.5f, 0.3f);
+		}
+	}
 }
 
 void ParticleSystem::UpdateParticle(int idx, glm::vec3 newPos, glm::vec3 newVel)
@@ -43,13 +66,13 @@ int ParticleSystem::GetMaxParticles()
 
 void ParticleSystem::spawnParticle(glm::vec3 _pos, glm::vec3 initVelocity = glm::vec3(0, 0, 0))
 {
-	if (currParticles < maxParticles) {
+	//if (currParticles < maxParticles) {
 		UpdateParticle(currParticles, _pos, initVelocity);
 		particles[currParticles].age = 0;
 		//particles[currParticles].enabled = true;
 		particles[currParticles].prevPos = _pos;
 		currParticles++;
-	}
+	//}
 }
 
 void ParticleSystem::updateAge(float dt)
