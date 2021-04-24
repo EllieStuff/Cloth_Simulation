@@ -289,8 +289,16 @@ void PhysicsUpdate(float dt) {
 	//mesh.UpdateSpeed(dt);
 	mesh.PrintParticlesPos();
 
-	ClothMesh::updateClothMesh(&(mesh.nodes[0][0].pos.x));
-	LilSpheres::updateParticles(0, mesh.width * mesh.height, &(mesh.nodes[0][0].pos.x));
+	std::vector<glm::vec3> tmpPos(mesh.width * mesh.height);
+	for (int row = 0; row < mesh.width; row++) {
+		for (int col = 0; col < mesh.height; col++) {
+			int idx = row * mesh.width + col;
+			tmpPos[idx] = mesh.nodes[col][row].pos;
+		}
+	}
+
+	ClothMesh::updateClothMesh(&(tmpPos[0].x));
+	LilSpheres::updateParticles(0, mesh.width * mesh.height, &(tmpPos[0].x));
 }
 
 
