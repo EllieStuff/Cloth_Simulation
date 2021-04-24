@@ -30,6 +30,9 @@ namespace LilSpheres {
 	extern void drawParticles(int startIdx, int count);
 }
 namespace ClothMesh {
+	extern int NumCols;
+	extern int numRows;
+
 	extern void setupClothMesh();
 	extern void cleanupClothMesh();
 	extern void updateClothMesh(float* array_data);

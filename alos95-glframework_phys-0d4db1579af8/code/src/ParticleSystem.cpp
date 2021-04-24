@@ -2,14 +2,17 @@
 
 ParticleSystem::ParticleSystem(int _numParticles, glm::vec3 _pos)
 {
-	//maxParticles = _numParticles;
-	currParticles = _numParticles;
-	if (currParticles > maxParticles) currParticles = maxParticles;
-	particles = new Particle[maxParticles];
-	auxPosArr = new glm::vec3[maxParticles];
-	//particles[maxParticles].age = 0;
-	/*positions = new glm::vec3[maxParticles];
-	age = new float[maxParticles];*/
+	InitParticles(_numParticles);
+
+	////maxParticles = _numParticles;
+	//currParticles = _numParticles;
+	//if (currParticles > maxParticles) currParticles = maxParticles;
+	//particles = new Particle[maxParticles];
+	//auxPosArr = new glm::vec3[maxParticles];
+
+	////particles[maxParticles].age = 0;
+	///*positions = new glm::vec3[maxParticles];
+	//age = new float[maxParticles];*/
 }
 
 void ParticleSystem::UpdateParticle(int idx, glm::vec3 newPos, glm::vec3 newVel)
@@ -36,10 +39,20 @@ void ParticleSystem::updateLilSpheres()
 	}
 }
 
+void ParticleSystem::InitParticles(int _numParticles, glm::vec3 _pos)
+{
+	currParticles = _numParticles;
+	if (currParticles > maxParticles) currParticles = maxParticles;
+	particles = new Particle[maxParticles];
+	auxPosArr = new glm::vec3[maxParticles];
+}
+
 int ParticleSystem::GetMaxParticles()
 {
 	return maxParticles;
 }
+
+
 
 void ParticleSystem::spawnParticle(glm::vec3 _pos, glm::vec3 initVelocity = glm::vec3(0, 0, 0))
 {

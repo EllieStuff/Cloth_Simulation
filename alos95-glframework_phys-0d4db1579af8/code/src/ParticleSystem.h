@@ -89,6 +89,8 @@ public:
 
 	void updateLilSpheres();
 
+	void InitParticles(int _numParticles, glm::vec3 _pos = glm::vec3(0, 0, 0));
+
 	int GetMaxParticles();
 
 	void spawnParticle(glm::vec3 _pos, glm::vec3 initVelocity);
