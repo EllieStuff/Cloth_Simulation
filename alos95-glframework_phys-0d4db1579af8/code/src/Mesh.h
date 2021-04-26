@@ -98,12 +98,15 @@ public:
 				+ glm::dot(currSpring.K_DAMPING  * (particles[currSpring.p1_idx].speed - particles[currSpring.p2_idx].speed), p2p1NormalizedVector))
 				* p2p1NormalizedVector;
 
-			//particles[currSpring.p1_idx].totalForce += force;
-			//particles[currSpring.p2_idx].totalForce += -force;
-			//printf("%f\n", p2p1dist - currSpring.REST_DIST);
-			//printf("X: %f - ", particles[currSpring.p1_idx].speed.x);
-			//printf("Y: %f - ", particles[currSpring.p1_idx].speed.y);
-			//printf("Z: %f\n\n", particles[currSpring.p1_idx].speed.z);
+			particles[currSpring.p1_idx].totalForce += force;
+			particles[currSpring.p2_idx].totalForce += -force;
+			if (i == 14)
+			{
+				//printf("%f\n", p2p1dist - currSpring.REST_DIST);
+				printf("X: %f - ", force.x);
+				printf("Y: %f - ", force.y);
+				printf("Z: %f\n\n", force.z);
+			}
 		}
 
 		for (int i = 0; i < currParticles; i++) {
@@ -124,7 +127,7 @@ public:
 
 				particles[i].acc = (particles[i].totalForce /*+ gravity*/) / mass;
 				particles[i].prevPos = currParticle.pos;
-				particles[i].pos = currParticle.pos + (currParticle.pos - currParticle.prevPos) + particles[i].acc * pow(dt, 2.0f);
+				particles[i].pos = currParticle.pos + (currParticle.pos - currParticle.prevPos) + particles[i].acc * pow(dt/100, 2.0f);
 				particles[i].speed += (particles[i].pos - particles[i].prevPos)/dt;
 
 
