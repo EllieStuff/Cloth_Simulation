@@ -1,7 +1,7 @@
 #include <imgui\imgui.h>
 #include <imgui\imgui_impl_sdl_gl3.h>
 #include <glm\glm.hpp>
-#include "ParticleSystem.h"
+#include "Mesh.h"
 #include "Utils.h"
 
 //Exemple
@@ -22,103 +22,6 @@ float maxAge = 30.f;
 const int INIT_PARTICLES = 1000;
 float currTime = 1.f / ps.emissionRate;
 bool emissionType = true;
-
-
-namespace ClothMesh {
-	extern const int numCols;
-	extern const int numRows;
-
-	extern void setupClothMesh();
-	extern void cleanupClothMesh();
-	extern void updateClothMesh(float* array_data);
-	extern void drawClothMesh();
-}
-
-class Mesh : public ParticleSystem {
-private:
-	struct Spring {
-		Mesh* m;
-		int p1_idx, p2_idx;
-		float K_ELASTICITY = 0.8f, K_DAMPING = 0.4f;
-		float REST_DIST = 0.5f;
-
-		Spring(Mesh _m, int _p1_idx, int _p2_idx, float _K_ELASTICITY, float _K_DAMPING, float _REST_DIST)
-			: m(&_m), // <---- es correcte?!?!?!?! <:'O
-			p1_idx(_p1_idx), p2_idx(_p2_idx), K_ELASTICITY(_K_ELASTICITY), K_DAMPING(_K_DAMPING), REST_DIST(_REST_DIST) {
-		};
-
-
-
-	};
-
-	int getIndex(int row, int col) {
-		return row * width + col;
-	};
-
-public:
-	int width, height;
-	std::vector<std::vector<Particle>> nodes;
-	//int particleSpawnerCounter = 0;
-
-	Mesh() : width(ClothMesh::numRows), height(ClothMesh::numCols) {};
-	Mesh(int _width, int _height) {
-		width = _width;
-		height = _height;
-		InitParticles(_width * _height);
-		nodes = std::vector<std::vector<Particle>>(_height);
-
-		// initialize mesh positions
-		for (int row = 0; row < nodes.size(); row++) {
-			nodes[row] = std::vector<Particle>(_width);
-
-			for (int col = 0; col < nodes[row].size(); col++) {
-				//int a = getIndex(row, col);
-				//particles[getIndex(row, col)].pos = glm::vec3(row * 0.3f, col * 0.2f, 0.0f);
-				//SpawnMeshParticle(glm::vec3(row * 0.3f, col * 0.2f, 0.0f));
-				nodes[row][col].pos = glm::vec3(row * 0.3f, col * 0.2f, 0.0f);
-			}
-		}
-
-
-	}
-
-	/*void SpawnMeshParticle(glm::vec3 initPos = glm::vec3(0, 0, 0), glm::vec3 initVelocity = glm::vec3(0, 0, 0)) {
-		UpdateParticle(particleSpawnerCounter, initPos, initVelocity);
-
-		spawnParticle(initPos, initVelocity);
-
-		particleSpawnerCounter++;
-	}*/
-
-	glm::vec3 *getSpringForces(
-		float k_elasticity, 
-		float k_damping, 
-		float rest_distance, // L
-		glm::vec3 p1, glm::vec3 p2,
-		glm::vec3 v1, glm::vec3 v2
-	) {
-		// Force applied to p1 due to a spring from p1 to p2
-		glm::vec3 *springForces;
-
-		// TODO
-		// ...
-
-		return springForces;
-	}
-
-	void PrintParticlesPos() {
-		printf("\n\nParticles positions:\n");
-		for (int row = 0; row < nodes.size(); row++) {
-			for (int col = 0; col < nodes[row].size(); col++) {
-				//printf("The particle %i pos is (%f, %f, %f)\n", 
-				//	getIndex(row, col), particles[getIndex(row, col)].pos.x, particles[getIndex(row, col)].pos.y, particles[getIndex(row, col)].pos.z);
-				printf("The particle %i pos is (%f, %f, %f)\n",
-					getIndex(row, col), nodes[row][col].pos.x, nodes[row][col].pos.y, nodes[row][col].pos.z);
-			}
-		}
-	}
-
-};
 
 //class Solver {
 //private:
@@ -286,14 +189,17 @@ void PhysicsUpdate(float dt) {
 
 	//solver.updateParticles(mesh, forces);
 
-	//mesh.UpdateSpeed(dt);
-	mesh.PrintParticlesPos();
+	mesh.UpdateSpeed(dt);
+	//mesh.PrintParticlesPos();
 
 	std::vector<glm::vec3> tmpPos(mesh.width * mesh.height);
 	for (int row = 0; row < mesh.width; row++) {
 		for (int col = 0; col < mesh.height; col++) {
-			int idx = row * mesh.width + col;
-			tmpPos[idx] = mesh.nodes[col][row].pos;
+			int idx = col * mesh.width + row;
+			tmpPos[idx] = mesh.particles[idx].pos;
+			//tmpPos[idx] = mesh.nodes[col][row].pos;
+			//printf("The particle %i pos is (%f, %f, %f)\n",
+			//	idx, tmpPos[idx].x, tmpPos[idx].y, tmpPos[idx].z);
 		}
 	}
 

@@ -146,6 +146,7 @@ xcopy $(ProjectDir)libs\SDL2.dll $(OutDir) /y /d</Command>
     <ClCompile Include="src\render_prims.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\Mesh.h" />
     <ClInclude Include="src\ParticleSystem.h" />
     <ClInclude Include="src\Utils.h" />
   </ItemGroup>

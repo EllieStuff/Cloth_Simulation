@@ -16,6 +16,7 @@ struct Particle {
 	glm::vec3 pos;
 	glm::vec3 speed;
 	glm::vec3 acc;
+	glm::vec3 totalForce = glm::vec3(0, 0, 0);
 	float age = 0;
 	bool enabled = true;
 	Particle() {
@@ -57,8 +58,6 @@ private:
 	glm::vec3* auxPosArr;
 	float bounceCoef = 0.8f;
 	float fricCoef = 0.6f;
-	float mass = 1.f;
-	glm::vec3 gravity = glm::vec3(0, -9.81f * mass, 0);
 
 	//glm::vec3* positions;
 	//float* age;
@@ -74,13 +73,14 @@ private:
 		glm::vec3(-5.f, 10.f,  5.f)		//Left-Upper-Front (7)
 	};
 
-	void CheckCollisions(int i);
 
 public:
 	Particle* particles;
 	int currParticles = 0;
 	float emissionRate = 1.f;
 	float particlesForEachEmission = 6;
+	float mass = 1.f;
+	glm::vec3 gravity = glm::vec3(0, -9.81f * mass, 0);
 
 	ParticleSystem() {};
 	ParticleSystem(int _numParticles, glm::vec3 _pos = glm::vec3(0, 0, 0));
@@ -88,9 +88,11 @@ public:
 	void UpdateParticle(int idx, glm::vec3 newPos, glm::vec3 newVel);
 
 	void updateLilSpheres();
-
+	
 	void InitParticles(int _numParticles, glm::vec3 _pos = glm::vec3(0, 0, 0));
 
+	void CheckCollisions(int i);
+	
 	int GetMaxParticles();
 
 	void spawnParticle(glm::vec3 _pos, glm::vec3 initVelocity);
@@ -99,7 +101,7 @@ public:
 
 	void destroyOldParticles(float maxAge);
 
-	void UpdateSpeed(float dt);
+	virtual void UpdateSpeed(float dt);
 
 	glm::vec3 CalculatePlaneNormal(glm::vec3 vertex1, glm::vec3 vertex2, glm::vec3 vertex3);
 

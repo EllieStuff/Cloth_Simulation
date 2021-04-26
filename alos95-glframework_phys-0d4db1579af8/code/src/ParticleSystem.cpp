@@ -126,15 +126,19 @@ void ParticleSystem::UpdateSpeed(float dt)
 		}
 
 		// Verlet
-		Particle currParticle = particles[i];
-		particles[i].acc = gravity / mass;
-		particles[i].prevPos = currParticle.pos;
-		particles[i].pos = currParticle.pos + (currParticle.pos - currParticle.prevPos) + particles[i].acc * pow(dt, 2.0f);
-		particles[i].speed += (particles[i].pos - particles[i].prevPos) / dt;
+		if (i != 251 && i != 238) {
+			Particle currParticle = particles[i];
+
+			//glm::vec3 force = -()
+
+			particles[i].acc = gravity / mass;
+			particles[i].prevPos = currParticle.pos;
+			particles[i].pos = currParticle.pos + (currParticle.pos - currParticle.prevPos) + particles[i].acc * pow(dt, 2.0f);
+			particles[i].speed += (particles[i].pos - particles[i].prevPos) / dt;
 
 
-
-		CheckCollisions(i);
+			CheckCollisions(i);
+		}
 	}
 }
 
