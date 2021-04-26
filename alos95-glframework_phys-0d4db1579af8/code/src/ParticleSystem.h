@@ -20,7 +20,7 @@ struct Particle {
 	float age = 0;
 	bool enabled = true;
 	Particle() {
-		prevPos = glm::vec3(-1, -1, -1);
+		prevPos = glm::vec3(0, 0, 0);
 	};
 	//Particle(const Particle& p) : prevPos(p.prevPos), pos(p.pos), speed(p.speed), acc(p.acc) {};
 
@@ -80,7 +80,7 @@ public:
 	float emissionRate = 1.f;
 	float particlesForEachEmission = 6;
 	float mass = 1.f;
-	glm::vec3 gravity = glm::vec3(0, -9.81f * mass, 0);
+	glm::vec3 gravity = glm::vec3(0, -9.81f, 0);
 
 	ParticleSystem() {};
 	ParticleSystem(int _numParticles, glm::vec3 _pos = glm::vec3(0, 0, 0));

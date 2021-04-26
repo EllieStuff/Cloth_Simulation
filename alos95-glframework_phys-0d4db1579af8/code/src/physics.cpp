@@ -192,10 +192,11 @@ void PhysicsUpdate(float dt) {
 	mesh.UpdateSpeed(dt);
 	//mesh.PrintParticlesPos();
 
+	int idx;
 	std::vector<glm::vec3> tmpPos(mesh.width * mesh.height);
-	for (int row = 0; row < mesh.width; row++) {
-		for (int col = 0; col < mesh.height; col++) {
-			int idx = col * mesh.width + row;
+	for (int row = 0; row < mesh.height; row++) {
+		for (int col = 0; col < mesh.width; col++) {
+			idx = row * mesh.width + col;
 			tmpPos[idx] = mesh.particles[idx].pos;
 			//tmpPos[idx] = mesh.nodes[col][row].pos;
 			//printf("The particle %i pos is (%f, %f, %f)\n",
