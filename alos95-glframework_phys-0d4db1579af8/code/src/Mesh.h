@@ -49,10 +49,12 @@ public:
 		//nodes = std::vector<std::vector<Particle>>(_height);
 		// initialize mesh positions
 		//int idx;
-		float stretchRestDist = 0.2f;
-		float shearRestDist = sqrt(pow(stretchRestDist, 2) * 2);
+		float rowStretchRestDist = abs(rowDist);
+		float colStretchRestDist = abs(colDist);
+		float shearRestDist = sqrt(pow(rowStretchRestDist, 2) + pow(colStretchRestDist, 2));
 		int blendMargin = 2;
-		float blendRestDist = stretchRestDist * blendMargin;
+		float rowBlendRestDist = rowStretchRestDist * blendMargin;
+		float colBlendRestDist = colStretchRestDist * blendMargin;
 
 		for (int row = 0; row < height; row++) {
 			//nodes[row] = std::vector<Particle>(_width);
@@ -73,10 +75,10 @@ public:
 
 				// Structurals/Stretch Springs
 				if (row < height - 1) {
-					springs.push_back(Spring(this, idx, getIndex(row + 1, col), stretchRestDist));
+					springs.push_back(Spring(this, idx, getIndex(row + 1, col), rowStretchRestDist));
 				}
 				if (col < width - 1) {
-					springs.push_back(Spring(this, idx, getIndex(row, col + 1), stretchRestDist));
+					springs.push_back(Spring(this, idx, getIndex(row, col + 1), colStretchRestDist));
 				}
 				// Shear Springs
 				if (row < height - 1 && col < width - 1) {
@@ -87,10 +89,10 @@ public:
 				}
 				// Flexion/Bending Springs -- ToDo: is this okey?
 				if (row < height - blendMargin) {
-					springs.push_back(Spring(this, idx, getIndex(row + blendMargin, col), blendRestDist));
+					springs.push_back(Spring(this, idx, getIndex(row + blendMargin, col), rowBlendRestDist));
 				}
 				if (col < width - blendMargin) {
-					springs.push_back(Spring(this, idx, getIndex(row, col + blendMargin), blendRestDist));
+					springs.push_back(Spring(this, idx, getIndex(row, col + blendMargin), colBlendRestDist));
 				}
 
 
