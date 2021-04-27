@@ -55,7 +55,7 @@ public:
 				idx = getIndex(row, col);
 				if (idx <= ClothMesh::numVerts)
 				{
-					particles[idx].pos = glm::vec3(row * rowDist - 1.5f, col * colDist + 5.f, 0.0f);
+					particles[idx].pos = glm::vec3(row * rowDist - 1.5f, 5, col * colDist);
 				}
 				else if (idx > ClothMesh::numVerts)
 				{
@@ -64,11 +64,11 @@ public:
 				
 				particles[idx].prevPos = particles[idx].pos;
 
-				if (col < height - 1) {
-					springs.push_back(Spring(this, idx, getIndex(row, col + 1)));
-				}
-				if (row < width - 1) {
+				if (row < height - 1) {
 					springs.push_back(Spring(this, idx, getIndex(row + 1, col)));
+				}
+				if (col < width - 1) {
+					springs.push_back(Spring(this, idx, getIndex(row, col + 1)));
 				}
 
 				//SpawnMeshParticle(glm::vec3(row * 0.3f, col * 0.2f, 0.0f));
@@ -122,12 +122,13 @@ public:
 			}
 
 			// Verlet
-			if (i != 0 && i != 238) {
+			if (i != 0 && i != currParticles - width) {
 				Particle currParticle = particles[i];
 
-				particles[i].acc = (particles[i].totalForce /*+ gravity*/) / mass;
+				particles[i].acc = (particles[i].totalForce + gravity) / mass;
+				particles[i].totalForce = glm::vec3(0, 0, 0);
 				particles[i].prevPos = currParticle.pos;
-				particles[i].pos = currParticle.pos + (currParticle.pos - currParticle.prevPos) + particles[i].acc * pow(dt/100, 2.0f);
+				particles[i].pos = currParticle.pos + (currParticle.pos - currParticle.prevPos) + particles[i].acc * pow(dt/10, 2.0f);
 				particles[i].speed += (particles[i].pos - particles[i].prevPos)/dt;
 
 
