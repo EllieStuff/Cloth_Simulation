@@ -160,6 +160,28 @@ void ParticleSystem::CheckCollisions(int i) {
 	distance = (abs(normal.x + normal.y + normal.z + planeD)) / sqrt(pow(normal.x, 2) + pow(normal.y, 2) + pow(normal.z, 2));
 	if (glm::distance(Sphere::pos, particles[i].pos) <= Sphere::radius + 0.2f && glm::distance(Sphere::pos, particles[i].pos) >= Sphere::radius - 0.2f)
 	{
+		glm::vec3 speed = particles[i].speed;
+		glm::vec3 pos = particles[i].pos;
+
+		float a = pow(speed.x, 2) + pow(speed.y, 2) + pow(speed.z, 2);
+		float b = -2 * (speed.x * (Sphere::pos.x - pos.x) + speed.y * (Sphere::pos.y - pos.y) + speed.z * (Sphere::pos.z - pos.z));
+		float c = pow(Sphere::pos.x - pos.x, 2) + pow(Sphere::pos.x - pos.x, 2) + pow(Sphere::pos.x - pos.x, 2) - pow(Sphere::radius, 2);
+
+		float sqrtSol = sqrt(pow(b, 2) + (-4 * a * c)) / (2 * a);
+		
+		glm::vec3 sol1 = glm::vec3(pos + (-b + sqrtSol) * speed);
+		glm::vec3 sol2 = glm::vec3(pos + (-b - sqrtSol) * speed);
+
+		if (glm::distance(sol1, pos) < glm::distance(sol2, pos)) {
+			normal = glm::normalize(sol1 - pos);
+		}
+		else {
+			normal = glm::normalize(sol2 - pos);
+		}
+
+		planeD = (normal.x * particles[i].pos.x + normal.y * particles[i].pos.y + normal.z * particles[i].pos.z);
+		distance = (abs(normal.x + normal.y + normal.z + planeD)) / sqrt(pow(normal.x, 2) + pow(normal.y, 2) + pow(normal.z, 2));
+
 		//printf("PreCol PosX: %f \n", particles[0].pos.x);
 		//printf("PreCol PosY: %f \n", particles[0].pos.y);
 		//printf("PreCol PosZ: %f \n", particles[0].pos.z);

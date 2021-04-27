@@ -20,7 +20,7 @@ private:
 		float K_ELASTICITY = 1000.f, K_DAMPING = 50.f;
 		float REST_DIST = 0.2f;
 
-		Spring(Mesh* _m, int _p1_idx, int _p2_idx, float _K_ELASTICITY = 0.8f, float _K_DAMPING = 0.4f, float _REST_DIST = 0.2f)
+		Spring(Mesh* _m, int _p1_idx, int _p2_idx, float _K_ELASTICITY = 10000.0f, float _K_DAMPING = 0.1f, float _REST_DIST = 0.2f)
 			: m(_m), // <---- es correcte?!?!?!?! <:'O
 			p1_idx(_p1_idx), p2_idx(_p2_idx), K_ELASTICITY(_K_ELASTICITY), K_DAMPING(_K_DAMPING), REST_DIST(_REST_DIST) {
 		};
@@ -36,6 +36,7 @@ private:
 public:
 	int width, height;
 	float rowDist = 0.2f, colDist = -0.2f;
+	glm::vec3 margin = glm::vec3(-4.f, 8, 0.f);
 	std::vector<Spring> springs;
 	//std::vector<std::vector<Particle>> nodes;
 	//int particleSpawnerCounter = 0;
@@ -51,11 +52,12 @@ public:
 		for (int row = 0; row < height; row++) {
 			//nodes[row] = std::vector<Particle>(_width);
 
+			//margin = glm::vec3(Utils::Randomize(0, 10), Utils::Randomize(-5, 5), Utils::Randomize(0, 10));
 			for (int col = 0; col < width; col++) {
 				idx = getIndex(row, col);
 				if (idx <= ClothMesh::numVerts)
 				{
-					particles[idx].pos = glm::vec3(row * rowDist - 1.5f, 5, col * colDist);
+					particles[idx].pos = glm::vec3(row * rowDist + margin.x, margin.y, col * colDist + margin.z);
 				}
 				else if (idx > ClothMesh::numVerts)
 				{
@@ -87,27 +89,29 @@ public:
 
 	void Mesh::UpdateSpeed(float dt)
 	{
-		for (int i = 0; i < springs.size(); i++) {
-			Spring currSpring = springs[i];
-			float p2p1dist = glm::distance(particles[currSpring.p1_idx].pos, particles[currSpring.p2_idx].pos);
-			glm::vec3 p2p1Vector = particles[currSpring.p1_idx].pos - particles[currSpring.p2_idx].pos;
-			glm::vec3 p2p1NormalizedVector = glm::normalize(p2p1Vector);
+		//for (int i = 0; i < 3; i++) {
+			for (int i = 0; i < springs.size(); i++) {
+				Spring currSpring = springs[i];
+				float p2p1dist = glm::distance(particles[currSpring.p1_idx].pos, particles[currSpring.p2_idx].pos);
+				glm::vec3 p2p1Vector = particles[currSpring.p1_idx].pos - particles[currSpring.p2_idx].pos;
+				glm::vec3 p2p1NormalizedVector = glm::normalize(p2p1Vector);
 
-			// ToDo Averiguar v1 - v2
-			glm::vec3 force = -(currSpring.K_ELASTICITY * (p2p1dist - currSpring.REST_DIST)
-				+ glm::dot(currSpring.K_DAMPING  * (particles[currSpring.p1_idx].speed - particles[currSpring.p2_idx].speed), p2p1NormalizedVector))
-				* p2p1NormalizedVector;
+				// ToDo Averiguar v1 - v2
+				glm::vec3 force = -(currSpring.K_ELASTICITY * (p2p1dist - currSpring.REST_DIST)
+					+ glm::dot(currSpring.K_DAMPING * (particles[currSpring.p1_idx].speed - particles[currSpring.p2_idx].speed), p2p1NormalizedVector))
+					* p2p1NormalizedVector;
 
-			particles[currSpring.p1_idx].totalForce += force;
-			particles[currSpring.p2_idx].totalForce += -force;
-			if (i == 14)
-			{
-				//printf("%f\n", p2p1dist - currSpring.REST_DIST);
-				printf("X: %f - ", force.x);
-				printf("Y: %f - ", force.y);
-				printf("Z: %f\n\n", force.z);
+				particles[currSpring.p1_idx].totalForce += force;
+				particles[currSpring.p2_idx].totalForce += -force;
+				//if (i == 14)
+				//{
+				//	//printf("%f\n", p2p1dist - currSpring.REST_DIST);
+				//	printf("X: %f - ", force.x);
+				//	printf("Y: %f - ", force.y);
+				//	printf("Z: %f\n\n", force.z);
+				//}
 			}
-		}
+		//}
 
 		for (int i = 0; i < currParticles; i++) {
 			//particles[i].prevPos = particles[i].pos;
@@ -132,7 +136,7 @@ public:
 				particles[i].speed += (particles[i].pos - particles[i].prevPos)/dt;
 
 
-				//CheckCollisions(i);
+				CheckCollisions(i);
 			}
 		}
 	}

@@ -126,8 +126,9 @@ void PhysicsInit() {
 
 	renderParticles = true;
 	ps = ParticleSystem(INIT_PARTICLES);
-	//renderSphere = renderCapsule = true;
-	//Sphere::setupSphere(glm::vec3(-2, 5, 0), 2.f);
+	renderSphere = true;
+	Sphere::setupSphere(glm::vec3(-2, 5, 0), 2.f);
+	//renderCapsule = true;
 	//Capsule::setupCapsule(glm::vec3(3, 3, 0), glm::vec3(2, 8, 0), 1.5f);
 }
 
@@ -177,9 +178,9 @@ void PhysicsUpdate(float dt) {
 	/*ps.updateAge(dt);
 	ps.UpdateSpeed(dt);*/
 
-	/*Sphere::updateSphere(glm::vec3(-2, 5, 0), 2.f);
+	Sphere::updateSphere(glm::vec3(-2, 5, 0), 2.f);
 	Sphere::drawSphere();
-	Capsule::updateCapsule(glm::vec3(3, 3, 0), glm::vec3(3, 7, 0), 1.5f);
+	/*Capsule::updateCapsule(glm::vec3(3, 3, 0), glm::vec3(3, 7, 0), 1.5f);
 	Capsule::drawCapsule();*/
 
 	// TODO: Posar les dades dins la funció i descomentar
