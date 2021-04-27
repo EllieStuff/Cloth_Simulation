@@ -15,14 +15,12 @@ namespace ClothMesh {
 class Mesh : public ParticleSystem {
 private:
 	struct Spring {
-		Mesh* m;
 		int p1_idx, p2_idx;
-		float K_ELASTICITY = 1000.f, K_DAMPING = 50.f;
-		float REST_DIST = 0.2f;
+		float K_ELASTICITY, K_DAMPING;
+		float REST_DIST;
 
-		Spring(Mesh* _m, int _p1_idx, int _p2_idx, float _REST_DIST = 0.2f, float _K_ELASTICITY = 10000.0f, float _K_DAMPING = 0.1f)
-			: m(_m), // <---- es correcte?!?!?!?! <:'O
-			p1_idx(_p1_idx), p2_idx(_p2_idx), REST_DIST(_REST_DIST), K_ELASTICITY(_K_ELASTICITY), K_DAMPING(_K_DAMPING) {
+		Spring(int _p1_idx, int _p2_idx, float _REST_DIST, float _K_ELASTICITY = 10000.0f, float _K_DAMPING = 0.1f)
+			: p1_idx(_p1_idx), p2_idx(_p2_idx), REST_DIST(_REST_DIST), K_ELASTICITY(_K_ELASTICITY), K_DAMPING(_K_DAMPING) {
 		};
 
 
@@ -36,7 +34,7 @@ private:
 public:
 	int width, height;
 	float rowDist = 0.2f, colDist = -0.2f;
-	glm::vec3 margin = glm::vec3(-4.f, 8, 0.f);
+	glm::vec3 margin = glm::vec3(-4.f, 8, 0.f);	//Nota: Canviar z per a provar colisio amb parets
 	std::vector<Spring> springs;
 	//std::vector<std::vector<Particle>> nodes;
 	//int particleSpawnerCounter = 0;
@@ -75,24 +73,24 @@ public:
 
 				// Structurals/Stretch Springs
 				if (row < height - 1) {
-					springs.push_back(Spring(this, idx, getIndex(row + 1, col), rowStretchRestDist));
+					springs.push_back(Spring(idx, getIndex(row + 1, col), rowStretchRestDist));
 				}
 				if (col < width - 1) {
-					springs.push_back(Spring(this, idx, getIndex(row, col + 1), colStretchRestDist));
+					springs.push_back(Spring(idx, getIndex(row, col + 1), colStretchRestDist));
 				}
 				// Shear Springs
 				if (row < height - 1 && col < width - 1) {
-					springs.push_back(Spring(this, idx, getIndex(row + 1, col + 1), shearRestDist));
+					springs.push_back(Spring(idx, getIndex(row + 1, col + 1), shearRestDist));
 				}
 				if (row > 0 && col < width - 1) {
-					springs.push_back(Spring(this, idx, getIndex(row - 1, col + 1), shearRestDist));
+					springs.push_back(Spring(idx, getIndex(row - 1, col + 1), shearRestDist));
 				}
 				// Flexion/Bending Springs -- ToDo: is this okey?
 				if (row < height - blendMargin) {
-					springs.push_back(Spring(this, idx, getIndex(row + blendMargin, col), rowBlendRestDist));
+					springs.push_back(Spring(idx, getIndex(row + blendMargin, col), rowBlendRestDist));
 				}
 				if (col < width - blendMargin) {
-					springs.push_back(Spring(this, idx, getIndex(row, col + blendMargin), colBlendRestDist));
+					springs.push_back(Spring(idx, getIndex(row, col + blendMargin), colBlendRestDist));
 				}
 
 
