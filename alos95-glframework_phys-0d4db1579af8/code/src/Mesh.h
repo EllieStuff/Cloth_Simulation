@@ -20,9 +20,9 @@ private:
 		float K_ELASTICITY = 1000.f, K_DAMPING = 50.f;
 		float REST_DIST = 0.2f;
 
-		Spring(Mesh* _m, int _p1_idx, int _p2_idx, float _K_ELASTICITY = 10000.0f, float _K_DAMPING = 0.1f, float _REST_DIST = 0.2f)
+		Spring(Mesh* _m, int _p1_idx, int _p2_idx, float _REST_DIST = 0.2f, float _K_ELASTICITY = 10000.0f, float _K_DAMPING = 0.1f)
 			: m(_m), // <---- es correcte?!?!?!?! <:'O
-			p1_idx(_p1_idx), p2_idx(_p2_idx), K_ELASTICITY(_K_ELASTICITY), K_DAMPING(_K_DAMPING), REST_DIST(_REST_DIST) {
+			p1_idx(_p1_idx), p2_idx(_p2_idx), REST_DIST(_REST_DIST), K_ELASTICITY(_K_ELASTICITY), K_DAMPING(_K_DAMPING) {
 		};
 
 
@@ -48,13 +48,18 @@ public:
 		InitParticles(_width * _height);
 		//nodes = std::vector<std::vector<Particle>>(_height);
 		// initialize mesh positions
-		int idx;
+		//int idx;
+		float stretchRestDist = 0.2f;
+		float shearRestDist = sqrt(pow(stretchRestDist, 2) * 2);
+		int blendMargin = 2;
+		float blendRestDist = stretchRestDist * blendMargin;
+
 		for (int row = 0; row < height; row++) {
 			//nodes[row] = std::vector<Particle>(_width);
 
 			//margin = glm::vec3(Utils::Randomize(0, 10), Utils::Randomize(-5, 5), Utils::Randomize(0, 10));
 			for (int col = 0; col < width; col++) {
-				idx = getIndex(row, col);
+				int idx = getIndex(row, col);
 				if (idx <= ClothMesh::numVerts)
 				{
 					particles[idx].pos = glm::vec3(row * rowDist + margin.x, margin.y, col * colDist + margin.z);
@@ -66,12 +71,29 @@ public:
 				
 				particles[idx].prevPos = particles[idx].pos;
 
+				// Structurals/Stretch Springs
 				if (row < height - 1) {
-					springs.push_back(Spring(this, idx, getIndex(row + 1, col)));
+					springs.push_back(Spring(this, idx, getIndex(row + 1, col), stretchRestDist));
 				}
 				if (col < width - 1) {
-					springs.push_back(Spring(this, idx, getIndex(row, col + 1)));
+					springs.push_back(Spring(this, idx, getIndex(row, col + 1), stretchRestDist));
 				}
+				// Shear Springs
+				if (row < height - 1 && col < width - 1) {
+					springs.push_back(Spring(this, idx, getIndex(row + 1, col + 1), shearRestDist));
+				}
+				if (row > 0 && col < width - 1) {
+					springs.push_back(Spring(this, idx, getIndex(row - 1, col + 1), shearRestDist));
+				}
+				// Flexion/Bending Springs -- ToDo: is this okey?
+				if (row < height - blendMargin) {
+					springs.push_back(Spring(this, idx, getIndex(row + blendMargin, col), blendRestDist));
+				}
+				if (col < width - blendMargin) {
+					springs.push_back(Spring(this, idx, getIndex(row, col + blendMargin), blendRestDist));
+				}
+
+
 
 				//SpawnMeshParticle(glm::vec3(row * 0.3f, col * 0.2f, 0.0f));
 				//nodes[row][col].pos = glm::vec3(row * rowDist + 1.5f, col * colDist + 5, 0.0f);
