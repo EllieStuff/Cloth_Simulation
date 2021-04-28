@@ -35,6 +35,7 @@ float bendElasticity = 10000.0f, bendDamping = 0.9f;
 float rowRestDist = 0.3f, colRestDist = 0.3f;
 
 glm::vec3 spherePos;
+float sphereRadius;
 
 
 bool show_test_window = false;
@@ -48,6 +49,7 @@ void GUI() {
 		if (ImGui::Button("Reset")) {
 			tempo = 0;
 			spherePos = glm::vec3((rand() % 10) - 5, rand() % 10, (rand() % 10) - 5);
+			sphereRadius = (rand() % 3) + 1;
 			mesh = Mesh(ClothMesh::numCols, ClothMesh::numRows, meshPos,
 				rowRestDist, colRestDist,
 				stretchElasticity, stretchDamping, 
@@ -92,7 +94,8 @@ void PhysicsInit() {
 	renderSphere = true;
 	if (renderSphere) {
 		spherePos = glm::vec3((rand() % 10) - 5, rand() % 10, (rand() % 10) - 5);
-		Sphere::setupSphere(spherePos, 2.f);
+		sphereRadius = (rand() % 3) + 1;
+		Sphere::setupSphere(spherePos, sphereRadius);
 	}
 	//renderCapsule = true;
 	//Capsule::setupCapsule(glm::vec3(3, 3, 0), glm::vec3(2, 8, 0), 1.5f);
@@ -159,7 +162,7 @@ void PhysicsUpdate(float dt) {
 		ps.UpdateSpeed(dt);*/
 
 		if (renderSphere) {
-			Sphere::updateSphere(spherePos, 2.f);
+			Sphere::updateSphere(spherePos, sphereRadius);
 			Sphere::drawSphere();
 		}
 		/*Capsule::updateCapsule(glm::vec3(3, 3, 0), glm::vec3(3, 7, 0), 1.5f);
