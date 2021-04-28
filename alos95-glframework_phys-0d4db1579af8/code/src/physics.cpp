@@ -24,75 +24,13 @@ float currTime = 1.f / ps.emissionRate;
 bool emissionType = true;
 float tempo = 0;
 
-//class Solver {
-//private:
-//
-//public:
-//	Solver() {};
-//
-//	virtual void updateParticles(Mesh _mesh, glm::vec3* forces) {};
-//
-//};
-//
-//class Euler : public Solver {
-//private:
-//
-//public:
-//	Euler() {};
-//
-//	void updateParticles(Mesh _mesh, glm::vec3* forces) override {
-//
-//	}
-//
-//};
-//
-//class Verlet : public Solver {
-//private:
-//
-//public:
-//	Verlet() {};
-//
-//	void updateParticles(Mesh _mesh, glm::vec3* forces) override {
-//
-//	}
-//
-//};
 
 
-//Solver solver;
 Mesh mesh;
-
-//void PhysicsInit() {
-//	// TODO: Mirar d'on ha tret aixo del solver
-//	solver = Verlet();
-//	//solver = Euler();
-//
-//	mesh = Mesh(ClothMesh::numCols, ClothMesh::numRows);
-//	renderCloth = true;
-//
-//	// Per a provar en una mesh mes petita
-//	//mesh = Mesh(1, 2);
-//
-//	// Per a rendiritzar particules per a debugar
-//	//renderParticles = true;
-//	//LilSpheres::particleCount = mesh.width * mesh.height;
-//}
-//
-//void PhysicsUpdate(float dt) {
-//	// TODO: Posar les dades dins la funció i descomentar
-//	//glm::vec3* forces = mesh.getSpringForces(/*Passar-hi dades de la funció*/);
-//
-//	// sumar gravetat
-//
-//	//solver.updateParticles(mesh, forces);
-//
-//	//ClothMesh::updateClothMesh(&(mesh.positions[0].x));
-//	LilSpheres::updateParticles(0, mesh.width * mesh.height, &(mesh.particles[0].pos.x));
-//}
-//
-//void PhysicsCleanup() {
-//
-//}
+float stretchElasticity = 10000.0f, stretchDamping = 0.9f;
+float shearElasticity = 10000.0f, shearDamping = 0.9f;
+float bendElasticity = 10000.0f, bendDamping = 0.9f;
+float rowRestDist = 0.3f, colRestDist = 0.3f;
 
 
 bool show_test_window = false;
@@ -102,9 +40,25 @@ void GUI() {
 
 	{
 		ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);//FrameRate
-		ImGui::SliderFloat("Emission Rate", &ps.emissionRate, 0.f, 10.f);
-		ImGui::SliderFloat("Particles emmited per pulse", &ps.particlesForEachEmission, 1.f, 20.f);
-		ImGui::Checkbox("Fountain <--On / Off--> Cascade", &emissionType);
+		ImGui::Text("Time Since StartUp: %.4f", tempo);
+		if (ImGui::Button("Reset")) {
+			tempo = 0;
+			mesh = Mesh(ClothMesh::numCols, ClothMesh::numRows, 
+				rowRestDist, colRestDist,
+				stretchElasticity, stretchDamping, 
+				shearElasticity, shearDamping, 
+				bendElasticity, bendDamping);
+		}
+		ImGui::SliderFloat("Stretch Elasticity", &stretchElasticity, 1000.f, 10000.f);
+		ImGui::SliderFloat("Stretch Damping", &stretchDamping, 0.f, 1.f);
+		ImGui::SliderFloat("Shear Elasticity", &shearElasticity, 1000.f, 10000.f);
+		ImGui::SliderFloat("Shear Damping", &shearDamping, 0.f, 1.f);
+		ImGui::SliderFloat("Bend Elasticity", &bendElasticity, 1000.f, 10000.f);
+		ImGui::SliderFloat("Bend Damping", &bendDamping, 0.f, 1.f);
+		ImGui::SliderFloat("Columns Rest Distance", &colRestDist, 0.1f, 0.5f);
+		ImGui::SliderFloat("Rows Rest Distance", &rowRestDist, 0.1f, 0.5f);
+
+		//ImGui::Checkbox("Fountain <--On / Off--> Cascade", &emissionType);
 		//Exemple_GUI();
 	}
 
@@ -182,7 +136,11 @@ void PhysicsUpdate(float dt) {
 		if (tempo >= 20.f)
 		{
 			tempo = 0;
-			mesh = Mesh(ClothMesh::numCols, ClothMesh::numRows);
+			mesh = Mesh(ClothMesh::numCols, ClothMesh::numRows,
+				rowRestDist, colRestDist,
+				stretchElasticity, stretchDamping,
+				shearElasticity, shearDamping,
+				bendElasticity, bendDamping);
 		}
 
 		ps.updateLilSpheres();

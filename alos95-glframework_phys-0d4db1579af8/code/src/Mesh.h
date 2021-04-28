@@ -36,14 +36,26 @@ public:
 	float rowDist = 0.3f, colDist = -0.3f;
 	glm::vec3 margin = glm::vec3(-4.f, 8, 3);	//Nota: Canviar z per a provar colisio amb parets
 	std::vector<Spring> springs;
+	/*float stretchElasticity = 10000.0f, stretchDamping = 0.9f;
+	float shearElasticity = 10000.0f, shearDamping = 0.9f;
+	float bendElasticity = 10000.0f, bendDamping = 0.9f;*/
+
 	//std::vector<std::vector<Particle>> nodes;
 	//int particleSpawnerCounter = 0;
 
 	Mesh() : width(ClothMesh::numCols), height(ClothMesh::numRows) {};
-	Mesh(int _width, int _height) {
+	Mesh(int _width, int _height, 
+		float rowRestDist = 0.3f, float colRestDist = 0.3f, 
+		float stretchElasticity = 10000.0f, float stretchDamping = 0.9f, 
+		float shearElasticity = 10000.0f, float shearDamping = 0.9f, 
+		float bendElasticity = 10000.0f, float bendDamping = 0.9f) 
+	{
 		width = _width;
 		height = _height;
+		rowDist = rowRestDist;
+		colDist = -colRestDist;
 		InitParticles(_width * _height);
+
 		//nodes = std::vector<std::vector<Particle>>(_height);
 		// initialize mesh positions
 		//int idx;
@@ -74,24 +86,24 @@ public:
 
 				// Structurals/Stretch Springs
 				if (row < height - 1) {
-					springs.push_back(Spring(idx, getIndex(row + 1, col), rowStretchRestDist));
+					springs.push_back(Spring(idx, getIndex(row + 1, col), rowStretchRestDist, stretchElasticity, stretchDamping));
 				}
 				if (col < width - 1) {
-					springs.push_back(Spring(idx, getIndex(row, col + 1), colStretchRestDist));
+					springs.push_back(Spring(idx, getIndex(row, col + 1), colStretchRestDist, stretchElasticity, stretchDamping));
 				}
 				// Shear Springs
 				if (row < height - 1 && col < width - 1) {
-					springs.push_back(Spring(idx, getIndex(row + 1, col + 1), rowShearRestDist));
+					springs.push_back(Spring(idx, getIndex(row + 1, col + 1), rowShearRestDist, shearElasticity, shearDamping));
 				}
 				if (row > 0 && col < width - 1) {
-					springs.push_back(Spring(idx, getIndex(row - 1, col + 1), colShearRestDist));
+					springs.push_back(Spring(idx, getIndex(row - 1, col + 1), colShearRestDist, shearElasticity, shearDamping));
 				}
 				// Flexion/Bending Springs -- ToDo: is this okey?
 				if (row < height - blendMargin) {
-					springs.push_back(Spring(idx, getIndex(row + blendMargin, col), rowBlendRestDist));
+					springs.push_back(Spring(idx, getIndex(row + blendMargin, col), rowBlendRestDist, bendElasticity, bendDamping));
 				}
 				if (col < width - blendMargin) {
-					springs.push_back(Spring(idx, getIndex(row, col + blendMargin), colBlendRestDist));
+					springs.push_back(Spring(idx, getIndex(row, col + blendMargin), colBlendRestDist, bendElasticity, bendDamping));
 				}
 
 
