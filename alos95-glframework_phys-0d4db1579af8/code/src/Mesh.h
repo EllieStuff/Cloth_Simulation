@@ -19,7 +19,7 @@ private:
 		float K_ELASTICITY, K_DAMPING;
 		float REST_DIST;
 
-		Spring(int _p1_idx, int _p2_idx, float _REST_DIST, float _K_ELASTICITY = 10000.0f, float _K_DAMPING = 0.1f)
+		Spring(int _p1_idx, int _p2_idx, float _REST_DIST, float _K_ELASTICITY = 10000.0f, float _K_DAMPING = 0.9f)
 			: p1_idx(_p1_idx), p2_idx(_p2_idx), REST_DIST(_REST_DIST), K_ELASTICITY(_K_ELASTICITY), K_DAMPING(_K_DAMPING) {
 		};
 
@@ -33,8 +33,8 @@ private:
 
 public:
 	int width, height;
-	float rowDist = 0.2f, colDist = -0.2f;
-	glm::vec3 margin = glm::vec3(-4.f, 8, 4.5f);	//Nota: Canviar z per a provar colisio amb parets
+	float rowDist = 0.4f, colDist = -0.4f;
+	glm::vec3 margin = glm::vec3(-4.f, 12, 4.5f);	//Nota: Canviar z per a provar colisio amb parets
 	std::vector<Spring> springs;
 	//std::vector<std::vector<Particle>> nodes;
 	//int particleSpawnerCounter = 0;
@@ -155,7 +155,7 @@ public:
 				particles[i].acc = (particles[i].totalForce + gravity) / mass;
 				particles[i].totalForce = glm::vec3(0, 0, 0);
 				particles[i].prevPos = currParticle.pos;
-				particles[i].pos = currParticle.pos + (currParticle.pos - currParticle.prevPos) + particles[i].acc * pow(dt/8, 2.0f);
+				particles[i].pos = currParticle.pos + (currParticle.pos - currParticle.prevPos) + particles[i].acc * pow(dt/10, 2.0f);
 				particles[i].speed += (particles[i].pos - particles[i].prevPos)/dt;
 
 
