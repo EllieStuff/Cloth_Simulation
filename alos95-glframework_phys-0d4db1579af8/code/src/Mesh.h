@@ -33,8 +33,8 @@ private:
 
 public:
 	int width, height;
-	float rowDist = 0.4f, colDist = -0.4f;
-	glm::vec3 margin = glm::vec3(-4.f, 12, 4.5f);	//Nota: Canviar z per a provar colisio amb parets
+	float rowDist = 0.3f, colDist = -0.3f;
+	glm::vec3 margin = glm::vec3(-4.f, 2, 4.5f);	//Nota: Canviar z per a provar colisio amb parets
 	std::vector<Spring> springs;
 	//std::vector<std::vector<Particle>> nodes;
 	//int particleSpawnerCounter = 0;
@@ -121,7 +121,7 @@ public:
 
 				// ToDo Averiguar v1 - v2
 				glm::vec3 force = -(currSpring.K_ELASTICITY * (p2p1dist - currSpring.REST_DIST)
-					+ glm::dot(currSpring.K_DAMPING * (particles[currSpring.p1_idx].speed - particles[currSpring.p2_idx].speed), p2p1NormalizedVector))
+					+ currSpring.K_DAMPING * glm::dot((particles[currSpring.p1_idx].speed - particles[currSpring.p2_idx].speed), p2p1NormalizedVector))
 					* p2p1NormalizedVector;
 
 				particles[currSpring.p1_idx].totalForce += force;
