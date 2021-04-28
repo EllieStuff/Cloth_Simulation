@@ -178,6 +178,10 @@ void ParticleSystem::CheckCollisions(int i, float dt) {
 	glm::vec3 normal;
 	float planeD, distance;
 
+	if (i == 220)
+	{
+		normal = normal;
+	}
 	// Check collisions
 	//Check particle - sphere collision
 	normal = glm::normalize(Sphere::pos - particles[i].pos);
@@ -189,7 +193,7 @@ void ParticleSystem::CheckCollisions(int i, float dt) {
 		glm::vec3 speed = particles[i].speed;
 		glm::vec3 pos = particles[i].prevPos;
 
-		printf("Speed %i: (%f, %f, %f)\n", i, speed.x, speed.y, speed.z);
+		//printf("Speed %i: (%f, %f, %f)\n", i, speed.x, speed.y, speed.z);
 		
 		float a = pow(speed.x, 2) + pow(speed.y, 2) + pow(speed.z, 2);
 		float b = -2 * (speed.x * (Sphere::pos.x - pos.x) + speed.y * (Sphere::pos.y - pos.y) + speed.z * (Sphere::pos.z - pos.z));
@@ -201,10 +205,10 @@ void ParticleSystem::CheckCollisions(int i, float dt) {
 		glm::vec3 sol2 = glm::vec3(pos + (-b - sqrtSol) * speed);
 
 		if (glm::distance(sol1, pos) < glm::distance(sol2, pos)) {
-			normal = glm::normalize(sol1 - pos);
+			normal = glm::normalize(sol1 - Sphere::pos);
 		}
 		else {
-			normal = glm::normalize(sol2 - pos);
+			normal = glm::normalize(sol2 - Sphere::pos);
 		}
 
 		planeD = -((normal.x * pos.x) + (normal.y * pos.y) + (normal.z * pos.z));
@@ -213,6 +217,11 @@ void ParticleSystem::CheckCollisions(int i, float dt) {
 		glm::vec3 tmpPrevPos = GetMirrorPosition(planeD, normal, particles[i].prevPos);
 		particles[i].pos = GetMirrorPosition(planeD, normal, particles[i].pos);
 		particles[i].speed = (particles[i].pos - tmpPrevPos) / dt;
+		printf("Speed %i: (%f, %f, %f)\n", i, particles[i].speed.x, particles[i].speed.y, particles[i].speed.z);
+		if (i == 68)
+		{
+			normal = normal;
+		}
 	}
 
 	////Check particle - capsule collision
