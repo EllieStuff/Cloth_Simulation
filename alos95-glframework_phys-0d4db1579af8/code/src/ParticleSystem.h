@@ -91,7 +91,7 @@ public:
 	
 	void InitParticles(int _numParticles, glm::vec3 _pos = glm::vec3(0, 0, 0));
 
-	void CheckCollisions(int i);
+	void CheckCollisions(int i, float dt);
 	
 	int GetMaxParticles();
 
@@ -102,6 +102,8 @@ public:
 	void destroyOldParticles(float maxAge);
 
 	virtual void UpdateSpeed(float dt);
+
+	glm::vec3 GetVerletSpeedProjection(int i, float dt, float planeD);
 
 	glm::vec3 CalculatePlaneNormal(glm::vec3 vertex1, glm::vec3 vertex2, glm::vec3 vertex3);
 

@@ -126,7 +126,7 @@ void PhysicsInit() {
 
 	renderParticles = true;
 	ps = ParticleSystem(INIT_PARTICLES);
-	renderSphere = false;
+	renderSphere = true;
 	if(renderSphere)
 		Sphere::setupSphere(glm::vec3(-2, 5, 0), 2.f);
 	//renderCapsule = true;
