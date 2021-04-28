@@ -142,20 +142,28 @@ void ParticleSystem::UpdateSpeed(float dt)
 	}
 }
 
-glm::vec3 ParticleSystem::GetVerletSpeedProjection(int i, float dt, float planeD)
+glm::vec3 ParticleSystem::GetMirrorPosition(float planeD, glm::vec3 _normal, glm::vec3 pointToMirror)
 {
-	glm::vec3 tmpPoint, tmpVec;
-	tmpPoint = particles[i].prevPos * planeD;
-	tmpVec = (tmpPoint - particles[i].prevPos) * 2.f;
-	glm::vec3 tmpPrevPos = tmpPoint + tmpVec;
-	tmpPoint = particles[i].pos * planeD;
-	tmpVec = (tmpPoint - particles[i].pos) * 2.f;
-	glm::vec3 tmpPos = tmpPoint + tmpVec;
+	float k = -(_normal.x * pointToMirror.x + _normal.y * pointToMirror.y + _normal.z * pointToMirror.z + planeD) / (_normal.x * _normal.x + _normal.y * _normal.y + _normal.z * _normal.z);
+	glm::vec3 point = _normal * k + pointToMirror;
+	glm::vec3 mirror = 2.f * point - pointToMirror;
+	glm::vec3 vecmod = point - pointToMirror;
+	float module1 = sqrt(pow(vecmod.x, 2) + pow(vecmod.y, 2) + pow(vecmod.z, 2));
+	vecmod = point - mirror;
+	float module2 = sqrt(pow(vecmod.x, 2) + pow(vecmod.y, 2) + pow(vecmod.z, 2));
+	return mirror;
+	//glm::vec3 tmpPoint, tmpVec;
+	//tmpPoint = particles[i].prevPos * planeD;
+	//tmpVec = (tmpPoint - particles[i].prevPos) * 2.f;
+	//glm::vec3 tmpPrevPos = tmpPoint + tmpVec;
+	//tmpPoint = particles[i].pos * planeD;
+	//tmpVec = (tmpPoint - particles[i].pos) * 2.f;
+	//glm::vec3 tmpPos = tmpPoint + tmpVec;
 
-	//particles[i].prevPos = tmpPrevPos;
-	//particles[i].pos += tmpPos;
+	////particles[i].prevPos = tmpPrevPos;
+	////particles[i].pos += tmpPos;
 
-	return ((tmpPos - tmpPrevPos) / dt);
+	//return ((tmpPos - tmpPrevPos) / dt);
 }
 
 glm::vec3 ClosestPointOnLineSegment(glm::vec3 A, glm::vec3 B, glm::vec3 Point)
@@ -174,7 +182,7 @@ void ParticleSystem::CheckCollisions(int i, float dt) {
 	normal = glm::normalize(Sphere::pos - particles[i].pos);
 	//planeD = (normal.x * particles[i].pos.x + normal.y * particles[i].pos.y + normal.z * particles[i].pos.z);
 	//distance = (abs(normal.x + normal.y + normal.z + planeD)) / sqrt(pow(normal.x, 2) + pow(normal.y, 2) + pow(normal.z, 2));
-	if (glm::distance(Sphere::pos, particles[i].pos) <= Sphere::radius + 0.2f && glm::distance(Sphere::pos, particles[i].pos) >= Sphere::radius - 0.2f)
+	if (glm::distance(Sphere::pos, particles[i].pos) <= Sphere::radius)
 	{
 		glm::vec3 speed = particles[i].speed;
 		glm::vec3 pos = particles[i].pos;
@@ -198,17 +206,9 @@ void ParticleSystem::CheckCollisions(int i, float dt) {
 		planeD = ((normal.x * pos.x) + (normal.y * pos.y) + (normal.z * pos.z));
 		distance = (abs(normal.x + normal.y + normal.z + planeD)) / sqrt(pow(normal.x, 2) + pow(normal.y, 2) + pow(normal.z, 2));
 
-		//printf("PreCol PosX: %f \n", particles[0].pos.x);
-		//printf("PreCol PosY: %f \n", particles[0].pos.y);
-		//printf("PreCol PosZ: %f \n", particles[0].pos.z);
-		particles[i].speed = GetVerletSpeedProjection(i, dt, planeD);
-
-		particles[i].pos = particles[i].pos - (1 + bounceCoef) * (glm::dot(normal, particles[i].pos) + distance) * normal;
-		particles[i].speed = particles[i].speed - (1 + bounceCoef) * (glm::dot(normal, particles[i].speed)) * normal;
-
-		//printf("PostCol PosX: %f \n", particles[0].pos.x);
-		//printf("PostCol PosY: %f \n", particles[0].pos.y);
-		//printf("PostCol PosZ: %f \n", particles[0].pos.z);
+		glm::vec3 tmpPrevPos = GetMirrorPosition(planeD, normal, particles[i].prevPos);
+		particles[i].pos = GetMirrorPosition(planeD, normal, particles[i].pos);
+		particles[i].speed = (particles[i].pos - tmpPrevPos) / dt;
 	}
 
 	////Check particle - capsule collision
@@ -231,71 +231,52 @@ void ParticleSystem::CheckCollisions(int i, float dt) {
 
 	//Floor
 	normal = glm::normalize(CalculatePlaneNormal(boxVertex[3], boxVertex[2], boxVertex[0]));
-	/*float I = ((particles[i].pos.x - boxVertex[3].x)*(boxVertex[2].y - boxVertex[3].y)*(boxVertex[0].z - boxVertex[3].z))-
-		((particles[i].pos.x - boxVertex[3].x)*(boxVertex[2].z - boxVertex[3].z)*(boxVertex[0].y - boxVertex[3].y));
-	float J = ((particles[i].pos.y - boxVertex[3].y) * (boxVertex[2].z - boxVertex[3].z) * (boxVertex[0].x - boxVertex[3].x)) -
-		((particles[i].pos.y - boxVertex[3].y) * (boxVertex[2].x - boxVertex[3].x) * (boxVertex[0].z - boxVertex[3].z));
-	float K = ((particles[i].pos.z - boxVertex[3].z) * (boxVertex[2].x - boxVertex[3].x) * (boxVertex[0].y - boxVertex[3].y)) -
-		((particles[i].pos.z - boxVertex[3].z) * (boxVertex[2].y - boxVertex[3].y) * (boxVertex[0].x - boxVertex[3].x));
-	planeD = I * boxVertex[3].x + J * boxVertex[3].y + K * boxVertex[3].z;*/
-	planeD = -(normal.x * boxVertex[3].x + normal.y * boxVertex[3].y + normal.z * boxVertex[3].z) - 1;
-	//float pointToPlaneVec = glm::distance(particles[i].prevPos, tmpPoint);
-
-	distance = (abs(normal.x + normal.y + normal.z + planeD)) / sqrt(pow(normal.x, 2) + pow(normal.y, 2) + pow(normal.z, 2));
-	if (HasCollided(particles[i].prevPos, particles[i].pos, normal, distance))
+	planeD = -(normal.x * boxVertex[3].x + normal.y * boxVertex[3].y + normal.z * boxVertex[3].z);
+	if (HasCollided(particles[i].prevPos, particles[i].pos, normal, planeD))
 	{
-		particles[i].speed = GetVerletSpeedProjection(i, dt, planeD);
-
-		particles[i].pos = particles[i].pos - (1 + bounceCoef) * (glm::dot(normal, particles[i].pos) + distance) * normal;
-		particles[i].speed = particles[i].speed - (1 + bounceCoef) * (glm::dot(normal, particles[i].speed)) * normal;
+		glm::vec3 tmpPrevPos = GetMirrorPosition(planeD, normal, particles[i].prevPos);
+		particles[i].pos = GetMirrorPosition(planeD, normal, particles[i].pos);
+		particles[i].speed = (particles[i].pos - tmpPrevPos) / dt;
 	}
 
 	//Left wall
 	normal = glm::normalize(CalculatePlaneNormal(boxVertex[3], boxVertex[0], boxVertex[7]));
-	planeD = (normal.x * boxVertex[3].x + normal.y * boxVertex[3].y + normal.z * boxVertex[3].z) - 1;
-	distance = (abs(normal.x + normal.y + normal.z + planeD)) / sqrt(pow(normal.x, 2) + pow(normal.y, 2) + pow(normal.z, 2));
-	if (HasCollided(particles[i].prevPos, particles[i].pos, normal, distance))
+	planeD = (normal.x * boxVertex[3].x + normal.y * boxVertex[3].y + normal.z * boxVertex[3].z);
+	if (HasCollided(particles[i].prevPos, particles[i].pos, normal, planeD))
 	{
-		particles[i].speed = GetVerletSpeedProjection(i, dt, planeD);
-
-		particles[i].pos = particles[i].pos - (1 + bounceCoef) * (glm::dot(normal, particles[i].pos) + distance) * normal;
-		particles[i].speed = particles[i].speed - (1 + bounceCoef) * (glm::dot(normal, particles[i].speed)) * normal;
+		glm::vec3 tmpPrevPos = GetMirrorPosition(planeD, normal, particles[i].prevPos);
+		particles[i].pos = GetMirrorPosition(planeD, normal, particles[i].pos);
+		particles[i].speed = (particles[i].pos - tmpPrevPos) / dt;
 	}
 
 	//Right wall
 	normal = glm::normalize(CalculatePlaneNormal(boxVertex[1], boxVertex[2], boxVertex[5]));
-	planeD = (normal.x * boxVertex[1].x + normal.y * boxVertex[1].y + normal.z * boxVertex[1].z) + 1;
-	distance = (abs(normal.x + normal.y + normal.z + planeD)) / sqrt(pow(normal.x, 2) + pow(normal.y, 2) + pow(normal.z, 2));
-	if (HasCollided(particles[i].prevPos, particles[i].pos, normal, distance))
+	planeD = (normal.x * boxVertex[1].x + normal.y * boxVertex[1].y + normal.z * boxVertex[1].z);
+	if (HasCollided(particles[i].prevPos, particles[i].pos, normal, planeD))
 	{
-		particles[i].speed = GetVerletSpeedProjection(i, dt, planeD);
-
-		particles[i].pos = particles[i].pos - (1 + bounceCoef) * (glm::dot(normal, particles[i].pos) + distance) * normal;
-		particles[i].speed = particles[i].speed - (1 + bounceCoef) * (glm::dot(normal, particles[i].speed)) * normal;
+		glm::vec3 tmpPrevPos = GetMirrorPosition(planeD, normal, particles[i].prevPos);
+		particles[i].pos = GetMirrorPosition(planeD, normal, particles[i].pos);
+		particles[i].speed = (particles[i].pos - tmpPrevPos) / dt;
 	}
 
 	//Rear wall
 	normal = glm::normalize(CalculatePlaneNormal(boxVertex[0], boxVertex[1], boxVertex[4]));
-	planeD = (normal.x * boxVertex[0].x + normal.y * boxVertex[0].y + normal.z * boxVertex[0].z) - 1;
-	distance = (abs(normal.x + normal.y + normal.z + planeD)) / sqrt(pow(normal.x, 2) + pow(normal.y, 2) + pow(normal.z, 2));
-	if (HasCollided(particles[i].prevPos, particles[i].pos, normal, distance))
+	planeD = (normal.x * boxVertex[0].x + normal.y * boxVertex[0].y + normal.z * boxVertex[0].z);
+	if (HasCollided(particles[i].prevPos, particles[i].pos, normal, planeD))
 	{
-		particles[i].speed = GetVerletSpeedProjection(i, dt, planeD);
-
-		particles[i].pos = particles[i].pos - (1 + bounceCoef) * (glm::dot(normal, particles[i].pos) + distance) * normal;
-		particles[i].speed = particles[i].speed - (1 + bounceCoef) * (glm::dot(normal, particles[i].speed)) * normal;
+		glm::vec3 tmpPrevPos = GetMirrorPosition(planeD, normal, particles[i].prevPos);
+		particles[i].pos = GetMirrorPosition(planeD, normal, particles[i].pos);
+		particles[i].speed = (particles[i].pos - tmpPrevPos) / dt;
 	}
 
 	//Front wall
 	normal = glm::normalize(CalculatePlaneNormal(boxVertex[3], boxVertex[7], boxVertex[2]));
-	planeD = (normal.x * boxVertex[3].x + normal.y * boxVertex[3].y + normal.z * boxVertex[3].z) + 1;
-	distance = (abs(normal.x + normal.y + normal.z + planeD)) / sqrt(pow(normal.x, 2) + pow(normal.y, 2) + pow(normal.z, 2));
-	if (HasCollided(particles[i].prevPos, particles[i].pos, normal, distance))
+	planeD = (normal.x * boxVertex[3].x + normal.y * boxVertex[3].y + normal.z * boxVertex[3].z);
+	if (HasCollided(particles[i].prevPos, particles[i].pos, normal, planeD))
 	{
-		particles[i].speed = GetVerletSpeedProjection(i, dt, planeD);
-
-		particles[i].pos = particles[i].pos - (1 + bounceCoef) * (glm::dot(normal, particles[i].pos) + distance) * normal;
-		particles[i].speed = particles[i].speed - (1 + bounceCoef) * (glm::dot(normal, particles[i].speed)) * normal;
+		glm::vec3 tmpPrevPos = GetMirrorPosition(planeD, normal, particles[i].prevPos);
+		particles[i].pos = GetMirrorPosition(planeD, normal, particles[i].pos);
+		particles[i].speed = (particles[i].pos - tmpPrevPos) / dt;
 	}
 }
 
@@ -307,7 +288,7 @@ glm::vec3 ParticleSystem::CalculatePlaneNormal(glm::vec3 initVertex, glm::vec3 f
 	return glm::cross(vector1, vector2);
 }
 
-bool ParticleSystem::HasCollided(glm::vec3 prevParticlePos, glm::vec3 particlePos, glm::vec3 normal, float distance)
+bool ParticleSystem::HasCollided(glm::vec3 prevParticlePos, glm::vec3 particlePos, glm::vec3 normal, float planeD)
 {
-	return ((glm::dot(normal, prevParticlePos) + distance) * (glm::dot(normal, particlePos) + distance)) <= 0;
+	return ((glm::dot(normal, prevParticlePos) + planeD) * (glm::dot(normal, particlePos) + planeD)) <= 0;
 }

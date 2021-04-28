@@ -103,7 +103,7 @@ public:
 
 	virtual void UpdateSpeed(float dt);
 
-	glm::vec3 GetVerletSpeedProjection(int i, float dt, float planeD);
+	glm::vec3 GetMirrorPosition(float planeD, glm::vec3 normal, glm::vec3 pointToMirror);
 
 	glm::vec3 CalculatePlaneNormal(glm::vec3 vertex1, glm::vec3 vertex2, glm::vec3 vertex3);
 

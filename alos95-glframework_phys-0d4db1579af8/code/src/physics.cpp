@@ -22,6 +22,7 @@ float maxAge = 30.f;
 const int INIT_PARTICLES = 1000;
 float currTime = 1.f / ps.emissionRate;
 bool emissionType = true;
+float tempo = 0;
 
 //class Solver {
 //private:
@@ -168,48 +169,58 @@ void UpdateCascade(float dt) {
 
 void PhysicsUpdate(float dt) {
 	currTime += dt;
-	//ps.destroyOldParticles(maxAge);
+	tempo += dt;
+	for (int q = 0; q < 10; q++)
+	{
+		//ps.destroyOldParticles(maxAge);
 
-	/*if (emissionType)
-		UpdateFountain(dt);
-	else if (!emissionType)
-		UpdateCascade(dt);*/
+		/*if (emissionType)
+			UpdateFountain(dt);
+		else if (!emissionType)
+			UpdateCascade(dt);*/
 
-	ps.updateLilSpheres();
-	/*ps.updateAge(dt);
-	ps.UpdateSpeed(dt);*/
-
-	if (renderSphere) {
-		Sphere::updateSphere(glm::vec3(-2, 5, 0), 2.f);
-		Sphere::drawSphere();
-	}
-	/*Capsule::updateCapsule(glm::vec3(3, 3, 0), glm::vec3(3, 7, 0), 1.5f);
-	Capsule::drawCapsule();*/
-
-	// TODO: Posar les dades dins la funció i descomentar
-	//glm::vec3* forces = mesh.getSpringForces(/*Passar-hi dades de la funció*/);
-
-	// sumar gravetat
-
-	//solver.updateParticles(mesh, forces);
-
-	mesh.UpdateSpeed(dt);
-	//mesh.PrintParticlesPos();
-
-	int idx;
-	std::vector<glm::vec3> tmpPos(mesh.width * mesh.height);
-	for (int row = 0; row < mesh.height; row++) {
-		for (int col = 0; col < mesh.width; col++) {
-			idx = row * mesh.width + col;
-			tmpPos[idx] = mesh.particles[idx].pos;
-			//tmpPos[idx] = mesh.nodes[col][row].pos;
-			//printf("The particle %i pos is (%f, %f, %f)\n",
-			//	idx, tmpPos[idx].x, tmpPos[idx].y, tmpPos[idx].z);
+		if (tempo >= 20.f)
+		{
+			tempo = 0;
+			mesh = Mesh(ClothMesh::numCols, ClothMesh::numRows);
 		}
-	}
 
-	ClothMesh::updateClothMesh(&(tmpPos[0].x));
-	LilSpheres::updateParticles(0, mesh.width * mesh.height, &(tmpPos[0].x));
+		ps.updateLilSpheres();
+		/*ps.updateAge(dt);
+		ps.UpdateSpeed(dt);*/
+
+		if (renderSphere) {
+			Sphere::updateSphere(glm::vec3(-2, 5, 0), 2.f);
+			Sphere::drawSphere();
+		}
+		/*Capsule::updateCapsule(glm::vec3(3, 3, 0), glm::vec3(3, 7, 0), 1.5f);
+		Capsule::drawCapsule();*/
+
+		// TODO: Posar les dades dins la funció i descomentar
+		//glm::vec3* forces = mesh.getSpringForces(/*Passar-hi dades de la funció*/);
+
+		// sumar gravetat
+
+		//solver.updateParticles(mesh, forces);
+
+		mesh.UpdateSpeed(dt);
+		//mesh.PrintParticlesPos();
+
+		int idx;
+		std::vector<glm::vec3> tmpPos(mesh.width * mesh.height);
+		for (int row = 0; row < mesh.height; row++) {
+			for (int col = 0; col < mesh.width; col++) {
+				idx = row * mesh.width + col;
+				tmpPos[idx] = mesh.particles[idx].pos;
+				//tmpPos[idx] = mesh.nodes[col][row].pos;
+				//printf("The particle %i pos is (%f, %f, %f)\n",
+				//	idx, tmpPos[idx].x, tmpPos[idx].y, tmpPos[idx].z);
+			}
+		}
+
+		ClothMesh::updateClothMesh(&(tmpPos[0].x));
+		LilSpheres::updateParticles(0, mesh.width * mesh.height, &(tmpPos[0].x));
+	}
 }
 
 

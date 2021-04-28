@@ -34,7 +34,7 @@ private:
 public:
 	int width, height;
 	float rowDist = 0.3f, colDist = -0.3f;
-	glm::vec3 margin = glm::vec3(-4.f, 8, 3.f);	//Nota: Canviar z per a provar colisio amb parets
+	glm::vec3 margin = glm::vec3(-4.f, 8, 4.5f);	//Nota: Canviar z per a provar colisio amb parets
 	std::vector<Spring> springs;
 	//std::vector<std::vector<Particle>> nodes;
 	//int particleSpawnerCounter = 0;
@@ -158,8 +158,7 @@ public:
 				particles[i].pos = currParticle.pos + (currParticle.pos - currParticle.prevPos) + particles[i].acc * pow(dt/10, 2.0f);
 				particles[i].speed += (particles[i].pos - particles[i].prevPos)/dt;
 
-
-				CheckCollisions(i, dt);
+				CheckCollisions(i, dt / 10);
 			}
 		}
 	}
