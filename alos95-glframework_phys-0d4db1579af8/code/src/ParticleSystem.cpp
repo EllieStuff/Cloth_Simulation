@@ -133,6 +133,7 @@ void ParticleSystem::UpdateSpeed(float dt)
 
 			particles[i].acc = gravity / mass;
 			particles[i].prevPos = currParticle.pos;
+			particles[i].prevSpeed = currParticle.speed;
 			particles[i].pos = currParticle.pos + (currParticle.pos - currParticle.prevPos) + particles[i].acc * pow(dt, 2.0f);
 			particles[i].speed += (particles[i].pos - particles[i].prevPos) / dt;
 
@@ -182,11 +183,14 @@ void ParticleSystem::CheckCollisions(int i, float dt) {
 	normal = glm::normalize(Sphere::pos - particles[i].pos);
 	//planeD = (normal.x * particles[i].pos.x + normal.y * particles[i].pos.y + normal.z * particles[i].pos.z);
 	//distance = (abs(normal.x + normal.y + normal.z + planeD)) / sqrt(pow(normal.x, 2) + pow(normal.y, 2) + pow(normal.z, 2));
-	if (glm::distance(Sphere::pos, particles[i].pos) <= Sphere::radius)
+	if (glm::distance(Sphere::pos, particles[i].pos) <= Sphere::radius /*&& glm::distance(Sphere::pos, particles[i].prevPos) > Sphere::radius*/)
 	{
-		glm::vec3 speed = particles[i].speed;
-		glm::vec3 pos = particles[i].pos;
 
+		glm::vec3 speed = particles[i].speed;
+		glm::vec3 pos = particles[i].prevPos;
+
+		printf("Speed %i: (%f, %f, %f)\n", i, speed.x, speed.y, speed.z);
+		
 		float a = pow(speed.x, 2) + pow(speed.y, 2) + pow(speed.z, 2);
 		float b = -2 * (speed.x * (Sphere::pos.x - pos.x) + speed.y * (Sphere::pos.y - pos.y) + speed.z * (Sphere::pos.z - pos.z));
 		float c = pow(Sphere::pos.x - pos.x, 2) + pow(Sphere::pos.x - pos.x, 2) + pow(Sphere::pos.x - pos.x, 2) - pow(Sphere::radius, 2);
@@ -203,8 +207,8 @@ void ParticleSystem::CheckCollisions(int i, float dt) {
 			normal = glm::normalize(sol2 - pos);
 		}
 
-		planeD = ((normal.x * pos.x) + (normal.y * pos.y) + (normal.z * pos.z));
-		distance = (abs(normal.x + normal.y + normal.z + planeD)) / sqrt(pow(normal.x, 2) + pow(normal.y, 2) + pow(normal.z, 2));
+		planeD = -((normal.x * pos.x) + (normal.y * pos.y) + (normal.z * pos.z));
+		//distance = (abs(normal.x + normal.y + normal.z + planeD)) / sqrt(pow(normal.x, 2) + pow(normal.y, 2) + pow(normal.z, 2));
 
 		glm::vec3 tmpPrevPos = GetMirrorPosition(planeD, normal, particles[i].prevPos);
 		particles[i].pos = GetMirrorPosition(planeD, normal, particles[i].pos);

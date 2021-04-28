@@ -15,6 +15,7 @@ struct Particle {
 	glm::vec3 prevPos;
 	glm::vec3 pos;
 	glm::vec3 speed;
+	glm::vec3 prevSpeed;
 	glm::vec3 acc;
 	glm::vec3 totalForce = glm::vec3(0, 0, 0);
 	float age = 0;
