@@ -45,6 +45,7 @@ public:
 
 	Mesh() : width(ClothMesh::numCols), height(ClothMesh::numRows) {};
 	Mesh(int _width, int _height, 
+		glm::vec3 _margin = glm::vec3(-4.f, 8, 3),
 		float rowRestDist = 0.3f, float colRestDist = 0.3f, 
 		float stretchElasticity = 10000.0f, float stretchDamping = 0.9f, 
 		float shearElasticity = 10000.0f, float shearDamping = 0.9f, 
@@ -54,6 +55,8 @@ public:
 		height = _height;
 		rowDist = rowRestDist;
 		colDist = -colRestDist;
+		margin = _margin;
+
 		InitParticles(_width * _height);
 
 		//nodes = std::vector<std::vector<Particle>>(_height);
@@ -136,8 +139,26 @@ public:
 					+ currSpring.K_DAMPING * glm::dot((particles[currSpring.p1_idx].speed - particles[currSpring.p2_idx].speed), p2p1NormalizedVector))
 					* p2p1NormalizedVector;
 
-				particles[currSpring.p1_idx].totalForce += force;
-				particles[currSpring.p2_idx].totalForce += -force;
+				float maxForce = 2000;
+				if (force.x > maxForce)
+				{
+					force.x = maxForce;
+				}
+				if (force.y > maxForce)
+				{
+					force.y = maxForce;
+				}
+				if (force.z > maxForce)
+				{
+					force.z = maxForce;
+				}
+
+				if (force.x <= maxForce && force.y <= maxForce && force.z <= maxForce)
+				{
+					particles[currSpring.p1_idx].totalForce += force;
+					particles[currSpring.p2_idx].totalForce += -force;
+				}
+
 				//if (i == 14)
 				//{
 				//	//printf("%f\n", p2p1dist - currSpring.REST_DIST);

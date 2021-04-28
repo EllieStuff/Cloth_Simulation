@@ -1,6 +1,7 @@
 #include <imgui\imgui.h>
 #include <imgui\imgui_impl_sdl_gl3.h>
 #include <glm\glm.hpp>
+
 #include "Mesh.h"
 #include "Utils.h"
 
@@ -27,10 +28,13 @@ float tempo = 0;
 
 
 Mesh mesh;
+glm::vec3 meshPos = glm::vec3(-4.f, 8, 3);
 float stretchElasticity = 10000.0f, stretchDamping = 0.9f;
 float shearElasticity = 10000.0f, shearDamping = 0.9f;
 float bendElasticity = 10000.0f, bendDamping = 0.9f;
 float rowRestDist = 0.3f, colRestDist = 0.3f;
+
+glm::vec3 spherePos;
 
 
 bool show_test_window = false;
@@ -43,12 +47,16 @@ void GUI() {
 		ImGui::Text("Time Since StartUp: %.4f", tempo);
 		if (ImGui::Button("Reset")) {
 			tempo = 0;
-			mesh = Mesh(ClothMesh::numCols, ClothMesh::numRows, 
+			spherePos = glm::vec3((rand() % 10) - 5, rand() % 10, (rand() % 10) - 5);
+			mesh = Mesh(ClothMesh::numCols, ClothMesh::numRows, meshPos,
 				rowRestDist, colRestDist,
 				stretchElasticity, stretchDamping, 
 				shearElasticity, shearDamping, 
 				bendElasticity, bendDamping);
 		}
+		ImGui::SliderFloat("Mesh X Position", &meshPos.x, -5.f, 5.f);
+		ImGui::SliderFloat("Mesh Y Position", &meshPos.y, 0.f, 10.f);
+		ImGui::SliderFloat("Mesh Z Position", &meshPos.z, -5.f, 5.f);
 		ImGui::SliderFloat("Stretch Elasticity", &stretchElasticity, 1000.f, 10000.f);
 		ImGui::SliderFloat("Stretch Damping", &stretchDamping, 0.f, 1.f);
 		ImGui::SliderFloat("Shear Elasticity", &shearElasticity, 1000.f, 10000.f);
@@ -79,11 +87,13 @@ void PhysicsInit() {
 
 	//Exemple_PhysicsInit();
 
-	renderParticles = true;
-	ps = ParticleSystem(INIT_PARTICLES);
+	renderParticles = false;
+	//ps = ParticleSystem(INIT_PARTICLES);
 	renderSphere = true;
-	if(renderSphere)
-		Sphere::setupSphere(glm::vec3(-2, 5, 0), 2.f);
+	if (renderSphere) {
+		spherePos = glm::vec3((rand() % 10) - 5, rand() % 10, (rand() % 10) - 5);
+		Sphere::setupSphere(spherePos, 2.f);
+	}
 	//renderCapsule = true;
 	//Capsule::setupCapsule(glm::vec3(3, 3, 0), glm::vec3(2, 8, 0), 1.5f);
 }
@@ -136,19 +146,20 @@ void PhysicsUpdate(float dt) {
 		if (tempo >= 20.f)
 		{
 			tempo = 0;
-			mesh = Mesh(ClothMesh::numCols, ClothMesh::numRows,
+			spherePos = glm::vec3((rand() % 10) - 5, rand() % 10, (rand() % 10) - 5);
+			mesh = Mesh(ClothMesh::numCols, ClothMesh::numRows, meshPos,
 				rowRestDist, colRestDist,
 				stretchElasticity, stretchDamping,
 				shearElasticity, shearDamping,
 				bendElasticity, bendDamping);
 		}
 
-		ps.updateLilSpheres();
+		//ps.updateLilSpheres();
 		/*ps.updateAge(dt);
 		ps.UpdateSpeed(dt);*/
 
 		if (renderSphere) {
-			Sphere::updateSphere(glm::vec3(-2, 5, 0), 2.f);
+			Sphere::updateSphere(spherePos, 2.f);
 			Sphere::drawSphere();
 		}
 		/*Capsule::updateCapsule(glm::vec3(3, 3, 0), glm::vec3(3, 7, 0), 1.5f);

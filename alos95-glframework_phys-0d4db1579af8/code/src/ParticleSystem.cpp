@@ -178,10 +178,6 @@ void ParticleSystem::CheckCollisions(int i, float dt) {
 	glm::vec3 normal;
 	float planeD, distance;
 
-	if (i == 220)
-	{
-		normal = normal;
-	}
 	// Check collisions
 	//Check particle - sphere collision
 	normal = glm::normalize(Sphere::pos - particles[i].pos);
@@ -217,11 +213,7 @@ void ParticleSystem::CheckCollisions(int i, float dt) {
 		glm::vec3 tmpPrevPos = GetMirrorPosition(planeD, normal, particles[i].prevPos);
 		particles[i].pos = GetMirrorPosition(planeD, normal, particles[i].pos);
 		particles[i].speed = (particles[i].pos - tmpPrevPos) / dt;
-		printf("Speed %i: (%f, %f, %f)\n", i, particles[i].speed.x, particles[i].speed.y, particles[i].speed.z);
-		if (i == 68)
-		{
-			normal = normal;
-		}
+
 	}
 
 	////Check particle - capsule collision
