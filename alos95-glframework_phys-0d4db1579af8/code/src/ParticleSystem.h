@@ -79,7 +79,7 @@ public:
 	int currParticles = 0;
 	float emissionRate = 1.f;
 	float particlesForEachEmission = 6;
-	float mass = 1.f;
+	float mass = 10.f;
 	glm::vec3 gravity = glm::vec3(0, -9.81f, 0);
 
 	ParticleSystem() {};

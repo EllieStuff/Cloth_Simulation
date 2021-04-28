@@ -34,7 +34,7 @@ private:
 public:
 	int width, height;
 	float rowDist = 0.2f, colDist = -0.2f;
-	glm::vec3 margin = glm::vec3(-4.f, 8, 0.f);	//Nota: Canviar z per a provar colisio amb parets
+	glm::vec3 margin = glm::vec3(-4.f, 8, 4.5f);	//Nota: Canviar z per a provar colisio amb parets
 	std::vector<Spring> springs;
 	//std::vector<std::vector<Particle>> nodes;
 	//int particleSpawnerCounter = 0;
@@ -49,7 +49,8 @@ public:
 		//int idx;
 		float rowStretchRestDist = abs(rowDist);
 		float colStretchRestDist = abs(colDist);
-		float shearRestDist = sqrt(pow(rowStretchRestDist, 2) + pow(colStretchRestDist, 2));
+		float rowShearRestDist = sqrt(pow(rowStretchRestDist, 2) + pow(rowStretchRestDist, 2));
+		float colShearRestDist = sqrt(pow(colStretchRestDist, 2) + pow(colStretchRestDist, 2));
 		int blendMargin = 2;
 		float rowBlendRestDist = rowStretchRestDist * blendMargin;
 		float colBlendRestDist = colStretchRestDist * blendMargin;
@@ -80,10 +81,10 @@ public:
 				}
 				// Shear Springs
 				if (row < height - 1 && col < width - 1) {
-					springs.push_back(Spring(idx, getIndex(row + 1, col + 1), shearRestDist));
+					springs.push_back(Spring(idx, getIndex(row + 1, col + 1), rowShearRestDist));
 				}
 				if (row > 0 && col < width - 1) {
-					springs.push_back(Spring(idx, getIndex(row - 1, col + 1), shearRestDist));
+					springs.push_back(Spring(idx, getIndex(row - 1, col + 1), colShearRestDist));
 				}
 				// Flexion/Bending Springs -- ToDo: is this okey?
 				if (row < height - blendMargin) {
@@ -111,7 +112,7 @@ public:
 
 	void Mesh::UpdateSpeed(float dt)
 	{
-		//for (int i = 0; i < 3; i++) {
+		for (int i = 0; i < 3; i++) {
 			for (int i = 0; i < springs.size(); i++) {
 				Spring currSpring = springs[i];
 				float p2p1dist = glm::distance(particles[currSpring.p1_idx].pos, particles[currSpring.p2_idx].pos);
@@ -133,7 +134,7 @@ public:
 				//	printf("Z: %f\n\n", force.z);
 				//}
 			}
-		//}
+		}
 
 		for (int i = 0; i < currParticles; i++) {
 			//particles[i].prevPos = particles[i].pos;
@@ -154,7 +155,7 @@ public:
 				particles[i].acc = (particles[i].totalForce + gravity) / mass;
 				particles[i].totalForce = glm::vec3(0, 0, 0);
 				particles[i].prevPos = currParticle.pos;
-				particles[i].pos = currParticle.pos + (currParticle.pos - currParticle.prevPos) + particles[i].acc * pow(dt/10, 2.0f);
+				particles[i].pos = currParticle.pos + (currParticle.pos - currParticle.prevPos) + particles[i].acc * pow(dt/8, 2.0f);
 				particles[i].speed += (particles[i].pos - particles[i].prevPos)/dt;
 
 
